@@ -23,6 +23,7 @@ export default createSchema({
 
     type Mutation {
       createBoard(input: CreateBoardInput!): CreateBoardOutput!
+      updateBoard(input: UpdateBoardInput!): UpdateBoardOutput!
       deleteBoard(id: ID!): DeleteBoardOutput!
       createColumn(input: CreateColumnInput!): CreateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
@@ -93,6 +94,16 @@ export default createSchema({
     type DeleteCardOutput {
       cardID: ID
     }
+
+    input UpdateBoardInput {
+      id: ID!
+      name: String
+      color: String
+    }
+
+    type UpdateBoardOutput {
+      board: Board
+    }
   `,
   resolvers: {
     Query: {
@@ -114,6 +125,14 @@ export default createSchema({
         }
         const [board] = boards.splice(index, 1);
         return { boardID: board.id };
+      },
+      updateBoard: (_, { input }) => {
+        const board = boards.find((board) => board.id === input.id);
+        if (!board) {
+          return {};
+        }
+        Object.assign(board, input);
+        return { board };
       },
       createColumn: (_, { input }) => {
         const column = { id: String(id++), ...input, cards: [] };

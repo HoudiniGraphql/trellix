@@ -4,6 +4,8 @@ import { PageProps } from "./$types";
 
 import { Column } from "./column";
 import { NewColumn } from "./new-column";
+import { EditableText } from "./components";
+import { graphql, useMutation } from "$houdini/index";
 
 export default function BoardSummary({ BoardInfo }: PageProps) {
   // scroll right when new columns are added
@@ -18,6 +20,19 @@ export default function BoardSummary({ BoardInfo }: PageProps) {
     return <div>Board not found</div>;
   }
 
+  const [, updateBoardName] = useMutation(
+    graphql(`
+      mutation updateBoardName($id: ID!, $name: String!) {
+        updateBoard(input: { id: $id, name: $name }) {
+          board {
+            id
+            name
+          }
+        }
+      }
+    `)
+  );
+
   return (
     <div
       className="h-full min-h-0 flex flex-col overflow-x-scroll"
@@ -25,15 +40,16 @@ export default function BoardSummary({ BoardInfo }: PageProps) {
       style={{ backgroundColor: board.color }}
     >
       <h1>
-        {/* <EditableText
+        <EditableText
           value={board.name}
-          fieldName="name"
           inputClassName="mx-8 my-4 text-2xl font-medium border border-slate-400 rounded-lg py-1 px-2 text-black"
           buttonClassName="mx-8 my-4 text-2xl font-medium block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
           buttonLabel={`Edit board "${board.name}" name`}
           inputLabel="Edit board name"
-        /> */}
-        {board.name}
+          onChange={(val) => {
+            updateBoardName({ variables: { id: board.id, name: val } });
+          }}
+        />
       </h1>
 
       <div className="flex flex-grow min-h-0 h-full items-start gap-4 px-8 pb-4">

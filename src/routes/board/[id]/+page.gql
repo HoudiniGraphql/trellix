@@ -1,5 +1,6 @@
 query BoardInfo($id: ID!) {
   board(id: $id) {
+    id
     name
     color
     columns {

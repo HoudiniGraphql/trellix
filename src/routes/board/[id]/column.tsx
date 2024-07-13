@@ -7,6 +7,7 @@ import { NewCard } from "./new-card";
 import { flushSync } from "react-dom";
 import { Card } from "./card";
 import { graphql, useFragment, type Column_column } from "$houdini";
+import { EditableText } from "./components";
 
 interface ColumnProps {
   column: Column_column;
@@ -69,15 +70,16 @@ export function Column(props: ColumnProps) {
       }}
     >
       <div className="p-2">
-        {/* <EditableText
-          fieldName="name"
+        <EditableText
           value={column.name}
+          onChange={(val) => {
+            console.log(val);
+          }}
           inputLabel="Edit column name"
           buttonLabel={`Edit column "${name}" name`}
           inputClassName="border border-slate-400 w-full rounded-lg py-1 px-2 font-medium text-black"
           buttonClassName="block rounded-lg text-left w-full border border-transparent py-1 px-2 font-medium text-slate-600"
-        /> */}
-        {column.name}
+        />
       </div>
 
       <ul ref={listRef} className="flex-grow overflow-auto min-h-[2px]">
