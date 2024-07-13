@@ -7,7 +7,7 @@ export default function RootLayout({ children }: LayoutProps) {
       <div className="bg-slate-900 border-b border-slate-800 flex items-center justify-between py-4 px-8 box-border">
         <a href="/home" className="block leading-3 w-1/3">
           <div className="font-black text-2xl text-white">Trellix</div>
-          <div className="text-slate-500">a Houdini Demo</div>
+          <div className="text-slate-500">a Houdini Clone of a Remix Demo</div>
         </a>
         <div className="flex items-center gap-6">
           <IconLink
