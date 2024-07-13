@@ -2,7 +2,7 @@ import { useRef } from "react";
 import invariant from "tiny-invariant";
 
 import { SaveButton, CancelButton } from "./components";
-import { graphql, useFragment, NewCard_column } from "$houdini";
+import { graphql, useFragment, NewCard_column, useMutation } from "$houdini";
 
 export function NewCard(props: {
   column: NewCard_column;
@@ -22,6 +22,20 @@ export function NewCard(props: {
     `)
   );
 
+  // the mutation to create a new card
+  const [, createCard] = useMutation(
+    graphql(`
+      mutation createCard($text: String!, $columnID: ID!) {
+        createCard(input: { text: $text, column: $columnID }) {
+          card {
+            id @optimisticKey
+            ...Column_Cards_insert @parentID(value: $columnID) @append
+          }
+        }
+      }
+    `)
+  );
+
   return (
     <form
       method="post"
@@ -29,7 +43,13 @@ export function NewCard(props: {
       onSubmit={(event) => {
         event.preventDefault();
         let formData = new FormData(event.currentTarget);
-        console.log(formData);
+        const text = formData.get("title") as string;
+        createCard({
+          variables: {
+            text,
+            columnID: column.id,
+          },
+        });
         invariant(textAreaRef.current);
         textAreaRef.current.value = "";
         props.onAddCard();

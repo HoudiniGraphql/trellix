@@ -47,8 +47,7 @@ export default createSchema({
 
     type Card {
       id: ID!
-      title: String!
-      content: String!
+      text: String!
       order: Int!
     }
 
@@ -168,7 +167,6 @@ export default createSchema({
         return {};
       },
       createCard: (_, { input }) => {
-        const card = { id: String(id++), ...input };
         const column = boards
           .flatMap((board) => board.columns)
           .find((column) => column.id === input.column);
@@ -176,8 +174,36 @@ export default createSchema({
           return {};
         }
 
+        const card = { id: String(id++), ...input, order: column.cards.length };
         column.cards.push(card);
         return { card };
+      },
+      deleteCard: (_, { id }) => {
+        let card: Card | null = null;
+        board_loop: for (const board of boards) {
+          for (const column of board.columns) {
+            for (const [index, columnCard] of column.cards.entries()) {
+              if (columnCard.id !== id) {
+                continue;
+              }
+
+              // we found the card
+              card = columnCard;
+
+              // remove the card from the column
+              column.cards.splice(index, 1);
+
+              // we're done
+              break board_loop;
+            }
+          }
+        }
+
+        if (!card) {
+          return { cardID: null };
+        }
+
+        return { cardID: card.id };
       },
       moveCard: (_, { input }) => {
         const { card: cardID, column: columnID, index } = input;

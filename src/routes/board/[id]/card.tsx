@@ -22,8 +22,7 @@ export function Card(props: CardProps) {
       fragment BoardInfoCard_card on Card {
         id
         order
-        title
-        content
+        text
       }
     `)
   );
@@ -90,11 +89,10 @@ export function Card(props: CardProps) {
           event.dataTransfer.setData("card", JSON.stringify(card));
         }}
       >
-        <h3>{card.title}</h3>
-        <div className="mt-2">{card.content || <>&nbsp;</>}</div>
+        <h3 className="mb-2">{card.text}</h3>
         <button
           aria-label="Delete card"
-          className="absolute top-4 right-4 hover:text-brand-red"
+          className="absolute top-[0.25rem] right-4 hover:text-brand-red"
           type="submit"
           onClick={(event) => {
             event.preventDefault();

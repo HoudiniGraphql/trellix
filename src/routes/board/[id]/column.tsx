@@ -25,7 +25,7 @@ export function Column(props: ColumnProps) {
       fragment Column_column on Column {
         id
         name
-        cards @list(name: "Column__Cards") {
+        cards @list(name: "Column_Cards") {
           order
           id
           ...BoardInfoCard_card
@@ -108,7 +108,7 @@ export function Column(props: ColumnProps) {
             });
           }}
           inputLabel="Edit column name"
-          buttonLabel={`Edit column "${name}" name`}
+          buttonLabel={`Edit column "${column.name}" name`}
           inputClassName="border border-slate-400 w-full rounded-lg py-1 px-2 font-medium text-black"
           buttonClassName="block rounded-lg text-left w-full border border-transparent py-1 px-2 font-medium text-slate-600"
         />
