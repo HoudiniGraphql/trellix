@@ -1,4 +1,5 @@
 import React from "react";
+import "./app.css";
 
 export default function App({ children }: { children: React.ReactNode }) {
   return (
@@ -11,9 +12,9 @@ export default function App({ children }: { children: React.ReactNode }) {
           type="image/png"
           href="https://houdinigraphql.com/images/logo.png"
         />
-        <title>Houdini • React</title>
+        <title>Trellix, a Houdini Demo</title>
       </head>
-      <body>
+      <body className="h-screen bg-slate-100 text-slate-900">
         <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>

@@ -1,5 +1,5 @@
 import { LayoutProps } from "./$types";
-import { LoginIcon, LogoutIcon } from "~/components/icons";
+import { LoginIcon } from "~/components/icons";
 
 export default function RootLayout({ children }: LayoutProps) {
   return (
@@ -7,22 +7,17 @@ export default function RootLayout({ children }: LayoutProps) {
       <div className="bg-slate-900 border-b border-slate-800 flex items-center justify-between py-4 px-8 box-border">
         <a href="/home" className="block leading-3 w-1/3">
           <div className="font-black text-2xl text-white">Trellix</div>
-          <div className="text-slate-500">a Remix Demo</div>
+          <div className="text-slate-500">a Houdini Demo</div>
         </a>
         <div className="flex items-center gap-6">
           <IconLink
-            href="https://www.youtube.com/watch?v=RTHzZVbTl6c&list=PLXoynULbYuED9b2k5LS44v9TQjfXifwNu&pp=gAQBiAQB"
-            icon="/yt_icon_mono_dark.png"
-            label="Videos"
-          />
-          <IconLink
-            href="https://github.com/remix-run/example-trellix"
+            href="https://github.com/houdinigraphql/trellix"
             label="Source"
             icon="/github-mark-white.png"
           />
           <IconLink
-            href="https://remix.run/docs/en/main"
-            icon="/r.png"
+            href="https://houdinigraphql.com/api/react"
+            icon="/hat.svg"
             label="Docs"
           />
         </div>
