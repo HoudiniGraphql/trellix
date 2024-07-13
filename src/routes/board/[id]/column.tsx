@@ -6,7 +6,12 @@ import { Icon } from "~/components/icons";
 import { NewCard } from "./new-card";
 import { flushSync } from "react-dom";
 import { Card } from "./card";
-import { graphql, useFragment, type Column_column } from "$houdini";
+import {
+  graphql,
+  useFragment,
+  useMutation,
+  type Column_column,
+} from "$houdini";
 import { EditableText } from "./components";
 
 interface ColumnProps {
@@ -18,6 +23,7 @@ export function Column(props: ColumnProps) {
     props.column,
     graphql(`
       fragment Column_column on Column {
+        id
         name
         cards @list(name: "Column__Cards") {
           order
@@ -38,6 +44,19 @@ export function Column(props: ColumnProps) {
     invariant(listRef.current);
     listRef.current.scrollTop = listRef.current.scrollHeight;
   }
+
+  const [, updateColumnName] = useMutation(
+    graphql(`
+      mutation UpdateColumnName($name: String!, $id: ID!) {
+        updateColumn(input: { name: $name, id: $id }) {
+          column {
+            id
+            name
+          }
+        }
+      }
+    `)
+  );
 
   const items = column.cards;
 
@@ -73,7 +92,20 @@ export function Column(props: ColumnProps) {
         <EditableText
           value={column.name}
           onChange={(val) => {
-            console.log(val);
+            updateColumnName({
+              variables: {
+                id: column.id,
+                name: val,
+              },
+              optimisticResponse: {
+                updateColumn: {
+                  column: {
+                    id: column.id,
+                    name: val,
+                  },
+                },
+              },
+            });
           }}
           inputLabel="Edit column name"
           buttonLabel={`Edit column "${name}" name`}

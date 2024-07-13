@@ -26,6 +26,7 @@ export default createSchema({
       updateBoard(input: UpdateBoardInput!): UpdateBoardOutput!
       deleteBoard(id: ID!): DeleteBoardOutput!
       createColumn(input: CreateColumnInput!): CreateColumnOutput!
+      updateColumn(input: UpdateColumnInput!): UpdateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
       deleteCard(id: ID!): DeleteCardOutput!
       moveCard(input: MoveCardInput!): MoveCardOutput!
@@ -65,10 +66,20 @@ export default createSchema({
     }
 
     input CreateColumnInput {
-      text: String!
+      board: ID!
+      name: String!
     }
 
     type CreateColumnOutput {
+      column: Column
+    }
+
+    input UpdateColumnInput {
+      id: ID!
+      name: String!
+    }
+
+    type UpdateColumnOutput {
       column: Column
     }
 
@@ -134,9 +145,27 @@ export default createSchema({
         Object.assign(board, input);
         return { board };
       },
+      updateColumn: (_, { input }) => {
+        const column = boards
+          .flatMap((board) => board.columns)
+          .find((column) => column.id.toString() === input.id);
+        if (!column) {
+          console.log("column not found", input.id, boards);
+          return {};
+        }
+        Object.assign(column, input);
+        return { column };
+      },
       createColumn: (_, { input }) => {
         const column = { id: String(id++), ...input, cards: [] };
-        return { column };
+        // add the column to the board
+        for (const board of boards) {
+          if (board.id.toString() === input.board) {
+            board.columns.push(column);
+            return { column };
+          }
+        }
+        return {};
       },
       createCard: (_, { input }) => {
         const card = { id: String(id++), ...input };

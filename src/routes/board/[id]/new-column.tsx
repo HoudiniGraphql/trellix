@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { flushSync } from "react-dom";
 import invariant from "tiny-invariant";
 import { Icon } from "~/components/icons";
-import { graphql, NewColumn_board, useFragment } from "$houdini";
+import { graphql, NewColumn_board, useFragment, useMutation } from "$houdini";
 
 import { CancelButton, SaveButton } from "./components";
 
@@ -23,11 +23,37 @@ export function NewColumn(props: {
     `)
   );
 
+  const [, createColumn] = useMutation(
+    graphql(`
+      mutation createColumn($input: CreateColumnInput!, $parentID: ID!) {
+        createColumn(input: $input) {
+          column {
+            id @optimisticKey
+            ...Board_Columns_insert @parentID(value: $parentID) @append
+          }
+        }
+      }
+    `)
+  );
+
   return editing ? (
     <form
       method="post"
       className="p-2 flex-shrink-0 flex flex-col gap-5 overflow-hidden max-h-full w-80 border rounded-xl shadow bg-slate-100"
       onSubmit={(event) => {
+        let formData = new FormData(event.currentTarget);
+
+        // trigger the mutation
+        createColumn({
+          variables: {
+            input: {
+              board: board.id,
+              name: formData.get("name") as string,
+            },
+            parentID: board.id,
+          },
+        });
+
         event.preventDefault();
         props.onAdd();
         invariant(inputRef.current, "missing input ref");

@@ -3,7 +3,7 @@ query BoardInfo($id: ID!) {
     id
     name
     color
-    columns {
+    columns @list(name: "Board_Columns") {
       id
       ...Column_column
     }
