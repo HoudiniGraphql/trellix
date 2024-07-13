@@ -11,7 +11,7 @@ export default function ({}: PageProps) {
       />
       <div className="space-y-4 max-w-md text-lg text-slate-300">
         <p>
-          This demo app is an implementation of Remix's{" "}
+          This is an implementation of Remix's{" "}
           <a
             href="https://trellix.fly.dev/"
             target="_blank"
@@ -29,27 +29,12 @@ export default function ({}: PageProps) {
       </div>
       <div className="flex w-full justify-evenly max-w-md mt-8 rounded-3xl p-10 bg-slate-800">
         <a
-          href="/login"
+          href="/home"
           className="text-xl font-medium text-brand-aqua underline"
         >
           Take Me In!
         </a>
       </div>
-      {/* <div className="flex w-full justify-evenly max-w-md mt-8 rounded-3xl p-10 bg-slate-800">
-        <a
-          href="/signup"
-          className="text-xl font-medium text-brand-aqua underline"
-        >
-          Sign up
-        </a>
-        <div className="h-full border-r border-slate-500" />
-        <a
-          href="/login"
-          className="text-xl font-medium text-brand-aqua underline"
-        >
-          Login
-        </a>
-      </div> */}
     </div>
   );
 }

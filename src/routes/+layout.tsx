@@ -21,15 +21,6 @@ export default function RootLayout({ children }: LayoutProps) {
             label="Docs"
           />
         </div>
-        <div className="w-1/3 flex justify-end">
-          <a href="/login" className="block text-center">
-            <LoginIcon />
-            <br />
-            <span className="text-slate-500 text-xs uppercase font-bold">
-              Log in
-            </span>
-          </a>
-        </div>
       </div>
 
       <div className="flex-grow min-h-0 h-full">{children}</div>

@@ -1,0 +1,12 @@
+query BoardInfo($id: ID!) {
+  board(id: $id) {
+    name
+    color
+    columns {
+      id
+      ...Column_column
+    }
+
+    ...NewColumn_board
+  }
+}

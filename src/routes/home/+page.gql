@@ -1,0 +1,7 @@
+query Home {
+  boards @list(name: "All_Boards") {
+    name
+    id
+    color
+  }
+}

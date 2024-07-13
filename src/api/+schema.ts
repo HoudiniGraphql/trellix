@@ -1,4 +1,5 @@
 import { createSchema } from "graphql-yoga";
+
 type Card = { id: string; text: string };
 type Column = { id: string; text: string; cards: Array<Card> };
 type Board = {
@@ -17,6 +18,7 @@ export default createSchema({
   typeDefs: /* GraphQL */ `
     type Query {
       boards: [Board!]!
+      board(id: ID!): Board
     }
 
     type Mutation {
@@ -24,6 +26,7 @@ export default createSchema({
       deleteBoard(id: ID!): DeleteBoardOutput!
       createColumn(input: CreateColumnInput!): CreateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
+      deleteCard(id: ID!): DeleteCardOutput!
       moveCard(input: MoveCardInput!): MoveCardOutput!
     }
 
@@ -35,14 +38,16 @@ export default createSchema({
     }
 
     type Column {
-      text: String!
+      name: String!
       id: ID!
       cards: [Card!]!
     }
 
     type Card {
       id: ID!
-      text: String!
+      title: String!
+      content: String!
+      order: Int!
     }
 
     type DeleteBoardOutput {
@@ -84,10 +89,17 @@ export default createSchema({
     type MoveCardOutput {
       card: Card
     }
+
+    type DeleteCardOutput {
+      cardID: ID
+    }
   `,
   resolvers: {
     Query: {
       boards: () => boards,
+      board: (_, { id }) => {
+        return boards.find((board) => board.id.toString() === id);
+      },
     },
     Mutation: {
       createBoard: (_, { input }) => {
