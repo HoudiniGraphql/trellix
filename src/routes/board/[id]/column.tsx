@@ -81,9 +81,6 @@ export function Column(props: ColumnProps) {
       onDrop={(event) => {
         let transfer = JSON.parse(event.dataTransfer.getData("card"));
         invariant(transfer.id, "missing transfer.id");
-        invariant(transfer.title, "missing transfer.title");
-
-        console.log(transfer.id, transfer.title);
 
         setAcceptDrop(false);
       }}
@@ -117,15 +114,8 @@ export function Column(props: ColumnProps) {
       <ul ref={listRef} className="flex-grow overflow-auto min-h-[2px]">
         {column.cards
           .sort((a, b) => a.order - b.order)
-          .map((item, index, items) => (
-            <Card
-              key={item.id}
-              card={item}
-              previousOrder={items[index - 1] ? items[index - 1].order : 0}
-              nextOrder={
-                items[index + 1] ? items[index + 1].order : item.order + 1
-              }
-            />
+          .map((item) => (
+            <Card key={item.id} card={item} />
           ))}
       </ul>
       {edit ? (

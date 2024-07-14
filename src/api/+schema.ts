@@ -49,6 +49,7 @@ export default createSchema({
       id: ID!
       text: String!
       order: Int!
+      column: Column!
     }
 
     type DeleteBoardOutput {
@@ -99,6 +100,7 @@ export default createSchema({
 
     type MoveCardOutput {
       card: Card
+      board: Board
     }
 
     type DeleteCardOutput {
@@ -121,6 +123,10 @@ export default createSchema({
       board: (_, { id }) => {
         return boards.find((board) => board.id.toString() === id);
       },
+    },
+    Column: {
+      cards: (column: Column) =>
+        column.cards.map((c, i) => ({ ...c, order: i, column })),
     },
     Mutation: {
       createBoard: (_, { input }) => {
@@ -174,7 +180,12 @@ export default createSchema({
           return {};
         }
 
-        const card = { id: String(id++), ...input, order: column.cards.length };
+        const card = {
+          id: String(id++),
+          ...input,
+          order: column.cards.length,
+          column,
+        };
         column.cards.push(card);
         return { card };
       },
@@ -208,8 +219,9 @@ export default createSchema({
       moveCard: (_, { input }) => {
         const { card: cardID, column: columnID, index } = input;
 
+        let parentBoard: Board | null = null;
         // we need to track the parent ID of the source
-        let card: Card | null = null;
+        let card: (Card & { column?: Column; order?: number }) | null = null;
         board_loop: for (const board of boards) {
           for (const column of board.columns) {
             for (const [index, columnCard] of column.cards.entries()) {
@@ -217,8 +229,10 @@ export default createSchema({
                 continue;
               }
 
+              parentBoard = board;
+
               // we found the card
-              card = columnCard;
+              card = { ...columnCard };
 
               // remove the card from the column
               column.cards.splice(index, 1);
@@ -242,12 +256,15 @@ export default createSchema({
           // add the card to the column at the designated index
           column.cards.splice(index, 0, card);
 
+          card.order = index;
+          card.column = column;
+
           // we're done
           break;
         }
 
         // nothing went wrong
-        return { card };
+        return { card, board: parentBoard };
       },
     },
   },

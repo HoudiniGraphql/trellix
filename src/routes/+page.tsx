@@ -20,7 +20,7 @@ export default function ({}: PageProps) {
           >
             Trellix Demo
           </a>{" "}
-          in order to provide a point of comparison across frameworks.
+          in order to provide a point of comparison between the two frameworks.
         </p>
 
         <p>To view the source, please use the link at the top of the screen.</p>

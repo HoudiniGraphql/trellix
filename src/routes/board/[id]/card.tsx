@@ -1,4 +1,3 @@
-import invariant from "tiny-invariant";
 import { useState } from "react";
 
 import { Icon } from "~/components/icons";
@@ -10,8 +9,6 @@ import {
 } from "$houdini";
 
 interface CardProps {
-  nextOrder: number;
-  previousOrder: number;
   card: BoardInfoCard_card;
 }
 
@@ -23,17 +20,38 @@ export function Card(props: CardProps) {
         id
         order
         text
+        column {
+          id
+        }
       }
     `)
   );
 
   let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
 
-  const [deletePending, deleteCard] = useMutation(
+  const [, deleteCard] = useMutation(
     graphql(`
       mutation deleteCard($cardID: ID!) {
         deleteCard(id: $cardID) {
           cardID @Card_delete
+        }
+      }
+    `)
+  );
+
+  const [, moveCard] = useMutation(
+    graphql(`
+      mutation moveCard($input: MoveCardInput!) {
+        moveCard(input: $input) {
+          board {
+            columns {
+              id
+              cards {
+                id
+                order
+              }
+            }
+          }
         }
       }
     `)
@@ -57,17 +75,22 @@ export function Card(props: CardProps) {
         event.stopPropagation();
 
         let transfer = JSON.parse(event.dataTransfer.getData("card"));
-        invariant(transfer.id, "missing cardId");
-        invariant(transfer.title, "missing title");
-
-        let droppedOrder =
-          acceptDrop === "top" ? props.previousOrder : props.nextOrder;
-        let moveOrder = (droppedOrder + card.order) / 2;
-
         console.log({
-          order: moveOrder,
-          id: transfer.id,
-          title: transfer.title,
+          accept: acceptDrop,
+          this: card.order,
+          next: acceptDrop === "top" ? card.order : card.order + 1,
+        });
+
+        let droppedOrder = acceptDrop === "top" ? card.order : card.order + 1;
+
+        moveCard({
+          variables: {
+            input: {
+              card: transfer.id,
+              column: card.column.id,
+              index: droppedOrder,
+            },
+          },
         });
 
         setAcceptDrop("none");
@@ -87,6 +110,7 @@ export function Card(props: CardProps) {
         onDragStart={(event) => {
           event.dataTransfer.effectAllowed = "move";
           event.dataTransfer.setData("card", JSON.stringify(card));
+          event.dataTransfer.setData("fromColumn", JSON.stringify(card));
         }}
       >
         <h3 className="mb-2">{card.text}</h3>
