@@ -1,7 +1,15 @@
+import { useCache } from "$houdini/plugins/houdini-react/runtime/routing";
+import React from "react";
+
 import { LayoutProps } from "./$types";
-import { LoginIcon } from "~/components/icons";
 
 export default function RootLayout({ children }: LayoutProps) {
+  const cache = useCache();
+  React.useEffect(() => {
+    // @ts-ignore
+    window.cache = cache;
+  });
+
   return (
     <div className="h-full flex flex-col min-h-0">
       <div className="bg-slate-900 border-b border-slate-800 flex items-center justify-between py-4 px-8 box-border">

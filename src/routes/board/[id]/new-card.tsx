@@ -1,8 +1,8 @@
+import { graphql, useFragment, NewCard_column, useMutation } from "$houdini";
 import { useRef } from "react";
 import invariant from "tiny-invariant";
 
 import { SaveButton, CancelButton } from "./components";
-import { graphql, useFragment, NewCard_column, useMutation } from "$houdini";
 
 export function NewCard(props: {
   column: NewCard_column;
@@ -19,7 +19,7 @@ export function NewCard(props: {
       fragment NewCard_column on Column {
         id
       }
-    `)
+    `),
   );
 
   // the mutation to create a new card
@@ -29,11 +29,16 @@ export function NewCard(props: {
         createCard(input: { text: $text, column: $columnID }) {
           card {
             id @optimisticKey
+            text
+            order
+            column {
+              id
+            }
             ...Column_Cards_insert @parentID(value: $columnID) @append
           }
         }
       }
-    `)
+    `),
   );
 
   return (
@@ -48,6 +53,17 @@ export function NewCard(props: {
           variables: {
             text,
             columnID: column.id,
+          },
+          optimisticResponse: {
+            createCard: {
+              card: {
+                text,
+                order: props.nextOrder,
+                column: {
+                  id: column.id,
+                },
+              },
+            },
           },
         });
         invariant(textAreaRef.current);

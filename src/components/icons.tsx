@@ -16,9 +16,7 @@ export function Icon({
   };
   return (
     <svg
-      className={`${classNames[size]} inline self-center ${
-        spin ? "animate-spin" : ""
-      }`}
+      className={`${classNames[size]} inline self-center ${spin ? "animate-spin" : ""}`}
     >
       <use href={`${iconsHref}#${name}`} />
     </svg>

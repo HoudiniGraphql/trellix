@@ -101,6 +101,8 @@ export default createSchema({
     type MoveCardOutput {
       card: Card
       board: Board
+      source: Column
+      destination: Column
     }
 
     type DeleteCardOutput {
@@ -222,12 +224,19 @@ export default createSchema({
         let parentBoard: Board | null = null;
         // we need to track the parent ID of the source
         let card: (Card & { column?: Column; order?: number }) | null = null;
+
+        // hold onto a reference to the source and destination columns
+        let source: Column | null = null;
+        let destination: Column | null = null;
+
         board_loop: for (const board of boards) {
           for (const column of board.columns) {
             for (const [index, columnCard] of column.cards.entries()) {
               if (columnCard.id !== cardID) {
                 continue;
               }
+
+              source = column;
 
               parentBoard = board;
 
@@ -253,6 +262,8 @@ export default createSchema({
             continue;
           }
 
+          destination = column;
+
           // add the card to the column at the designated index
           column.cards.splice(index, 0, card);
 
@@ -264,7 +275,7 @@ export default createSchema({
         }
 
         // nothing went wrong
-        return { card, board: parentBoard };
+        return { card, board: parentBoard, source, destination };
       },
     },
   },

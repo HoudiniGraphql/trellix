@@ -1,8 +1,9 @@
-import { Icon } from "~/components/icons";
-import type { PageProps } from "./$types";
-import { Button } from "~/components/button";
-import { Label, LabeledInput } from "~/components/input";
 import { graphql, useMutation } from "$houdini/index";
+import { Button } from "~/components/button";
+import { Icon } from "~/components/icons";
+import { Label, LabeledInput } from "~/components/input";
+
+import type { PageProps } from "./$types";
 
 export default function Projects({ Home }: PageProps) {
   return (
@@ -41,7 +42,7 @@ function Board({
           boardID @Board_delete
         }
       }
-    `)
+    `),
   );
 
   return (
@@ -80,7 +81,7 @@ function NewBoard() {
           }
         }
       }
-    `)
+    `),
   );
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

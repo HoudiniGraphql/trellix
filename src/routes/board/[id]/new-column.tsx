@@ -1,8 +1,8 @@
+import { graphql, NewColumn_board, useFragment, useMutation } from "$houdini";
 import { useState, useRef } from "react";
 import { flushSync } from "react-dom";
 import invariant from "tiny-invariant";
 import { Icon } from "~/components/icons";
-import { graphql, NewColumn_board, useFragment, useMutation } from "$houdini";
 
 import { CancelButton, SaveButton } from "./components";
 
@@ -20,7 +20,7 @@ export function NewColumn(props: {
       fragment NewColumn_board on Board {
         id
       }
-    `)
+    `),
   );
 
   const [, createColumn] = useMutation(
@@ -33,7 +33,7 @@ export function NewColumn(props: {
           }
         }
       }
-    `)
+    `),
   );
 
   return editing ? (

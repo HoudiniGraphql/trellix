@@ -1,12 +1,11 @@
-import { useState } from "react";
-
-import { Icon } from "~/components/icons";
 import {
   graphql,
   useFragment,
   useMutation,
   type BoardInfoCard_card,
 } from "$houdini";
+import { useState } from "react";
+import { Icon } from "~/components/icons";
 
 interface CardProps {
   card: BoardInfoCard_card;
@@ -24,7 +23,7 @@ export function Card(props: CardProps) {
           id
         }
       }
-    `)
+    `),
   );
 
   let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
@@ -36,25 +35,30 @@ export function Card(props: CardProps) {
           cardID @Card_delete
         }
       }
-    `)
+    `),
   );
 
   const [, moveCard] = useMutation(
     graphql(`
       mutation moveCard($input: MoveCardInput!) {
         moveCard(input: $input) {
-          board {
-            columns {
+          source {
+            id
+            cards {
               id
-              cards {
-                id
-                order
-              }
+              order
+            }
+          }
+          destination {
+            id
+            cards {
+              id
+              order
             }
           }
         }
       }
-    `)
+    `),
   );
 
   return (
@@ -75,11 +79,6 @@ export function Card(props: CardProps) {
         event.stopPropagation();
 
         let transfer = JSON.parse(event.dataTransfer.getData("card"));
-        console.log({
-          accept: acceptDrop,
-          this: card.order,
-          next: acceptDrop === "top" ? card.order : card.order + 1,
-        });
 
         let droppedOrder = acceptDrop === "top" ? card.order : card.order + 1;
 
@@ -100,8 +99,8 @@ export function Card(props: CardProps) {
         (acceptDrop === "top"
           ? "border-t-brand-red border-b-transparent"
           : acceptDrop === "bottom"
-          ? "border-b-brand-red border-t-transparent"
-          : "border-t-transparent border-b-transparent")
+            ? "border-b-brand-red border-t-transparent"
+            : "border-t-transparent border-b-transparent")
       }
     >
       <div
@@ -120,7 +119,14 @@ export function Card(props: CardProps) {
           type="submit"
           onClick={(event) => {
             event.preventDefault();
-            deleteCard({ variables: { cardID: card.id } });
+            deleteCard({
+              variables: { cardID: card.id },
+              optimisticResponse: {
+                deleteCard: {
+                  cardID: card.id,
+                },
+              },
+            });
           }}
         >
           <Icon name="trash" />

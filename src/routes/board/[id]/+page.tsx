@@ -1,11 +1,11 @@
+import { graphql, useMutation } from "$houdini/index";
 import React from "react";
 import invariant from "tiny-invariant";
-import { PageProps } from "./$types";
 
+import { PageProps } from "./$types";
 import { Column } from "./column";
-import { NewColumn } from "./new-column";
 import { EditableText } from "./components";
-import { graphql, useMutation } from "$houdini/index";
+import { NewColumn } from "./new-column";
 
 export default function BoardSummary({ BoardInfo }: PageProps) {
   // scroll right when new columns are added
@@ -30,7 +30,7 @@ export default function BoardSummary({ BoardInfo }: PageProps) {
           }
         }
       }
-    `)
+    `),
   );
 
   return (

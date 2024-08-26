@@ -1,18 +1,17 @@
-import { useState, useRef } from "react";
-import invariant from "tiny-invariant";
-
-import { Icon } from "~/components/icons";
-
-import { NewCard } from "./new-card";
-import { flushSync } from "react-dom";
-import { Card } from "./card";
 import {
   graphql,
   useFragment,
   useMutation,
   type Column_column,
 } from "$houdini";
+import { useState, useRef } from "react";
+import { flushSync } from "react-dom";
+import invariant from "tiny-invariant";
+import { Icon } from "~/components/icons";
+
+import { Card } from "./card";
 import { EditableText } from "./components";
+import { NewCard } from "./new-card";
 
 interface ColumnProps {
   column: Column_column;
@@ -33,7 +32,7 @@ export function Column(props: ColumnProps) {
 
         ...NewCard_column
       }
-    `)
+    `),
   );
 
   let [acceptDrop, setAcceptDrop] = useState(false);
@@ -55,7 +54,7 @@ export function Column(props: ColumnProps) {
           }
         }
       }
-    `)
+    `),
   );
 
   const items = column.cards;
