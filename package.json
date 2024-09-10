@@ -12,9 +12,9 @@
 		"@whatwg-node/server": "^0.9.14",
 		"graphql": "15.8.0",
 		"graphql-yoga": "4.0.4",
-		"houdini": "^1.2.56",
-		"houdini-adapter-auto": "^1.2.56",
-		"houdini-react": "^1.2.56",
+		"houdini": "^1.2.57",
+		"houdini-adapter-auto": "^1.2.57",
+		"houdini-react": "^1.2.57",
 		"react": "19.0.0-canary-2b036d3f1-20240327",
 		"react-dom": "19.0.0-canary-2b036d3f1-20240327",
 		"tiny-invariant": "^1.3.3"
