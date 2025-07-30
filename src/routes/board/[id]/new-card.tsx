@@ -28,7 +28,7 @@ export function NewCard(props: {
       mutation createCard($text: String!, $columnID: ID!) {
         createCard(input: { text: $text, column: $columnID }) {
           card {
-            id @optimisticKey
+            id 
             text
             order
             column {
@@ -53,17 +53,6 @@ export function NewCard(props: {
           variables: {
             text,
             columnID: column.id,
-          },
-          optimisticResponse: {
-            createCard: {
-              card: {
-                text,
-                order: props.nextOrder,
-                column: {
-                  id: column.id,
-                },
-              },
-            },
           },
         });
         invariant(textAreaRef.current);
