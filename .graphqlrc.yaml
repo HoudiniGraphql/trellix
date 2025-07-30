@@ -3,6 +3,6 @@ projects:
         schema:
             - ./$houdini/graphql/schema.graphql
         documents:
-            - '**/*.gql'
-            - '**/*.tsx'
+            - './**/*.gql'
+            - './**/*.tsx'
             - ./$houdini/graphql/documents.gql
