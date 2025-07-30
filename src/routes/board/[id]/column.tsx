@@ -2,8 +2,8 @@ import {
   graphql,
   useFragment,
   useMutation,
-  type Column_column,
 } from "$houdini";
+import type { Column_column } from "$houdini";
 import { useState, useRef } from "react";
 import { flushSync } from "react-dom";
 import invariant from "tiny-invariant";
