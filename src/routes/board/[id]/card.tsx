@@ -2,10 +2,10 @@ import {
   graphql,
   useFragment,
   useMutation,
-  type BoardInfoCard_card,
 } from "$houdini";
 import { useState } from "react";
 import { Icon } from "~/components/icons";
+import type { BoardInfoCard_card } from '$houdini'
 
 interface CardProps {
   card: BoardInfoCard_card;
