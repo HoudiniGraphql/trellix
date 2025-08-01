@@ -15,7 +15,7 @@ const boards: Array<Board> = [];
 let id = 0;
 
 export default createSchema({
-  typeDefs: /* GraphQL */ `
+  typeDefs: `
     type Query {
       boards: [Board!]!
       board(id: ID!): Board
@@ -122,7 +122,7 @@ export default createSchema({
   resolvers: {
     Query: {
       boards: () => boards,
-      board: (_, { id }) => {
+      board: (_: void, { id }: Board) => {
         return boards.find((board) => board.id.toString() === id);
       },
     },

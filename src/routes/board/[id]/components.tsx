@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, MutableRefObject, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import invariant from "tiny-invariant";
 
 export let SaveButton = forwardRef<
   HTMLButtonElement,
@@ -50,13 +51,15 @@ export function EditableText({
   onChange: (value: string) => void;
 }) {
   let [edit, setEdit] = useState(false);
-  let inputRef = useRef<HTMLInputElement>(null);
+  let inputRef = useRef<HTMLInputElement>(null) as MutableRefObject<HTMLInputElement | null>;
   let buttonRef = useRef<HTMLButtonElement>(null);
 
   return edit ? (
     <form
       method="post"
       onSubmit={() => {
+        invariant(inputRef.current)
+        onChange(inputRef.current.value)
         flushSync(() => {
           setEdit(false);
         });
@@ -65,7 +68,9 @@ export function EditableText({
     >
       <input
         required
-        ref={inputRef}
+        ref={ref => {
+          inputRef.current = ref
+        }}
         type="text"
         aria-label={inputLabel}
         defaultValue={value}
