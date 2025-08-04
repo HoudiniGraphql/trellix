@@ -28,7 +28,6 @@ export default createSchema({
       createColumn(input: CreateColumnInput!): CreateColumnOutput!
       updateColumn(input: UpdateColumnInput!): UpdateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
-      deleteCard(id: ID!): DeleteCardOutput!
       moveCard(input: MoveCardInput!): MoveCardOutput!
     }
 
@@ -103,10 +102,6 @@ export default createSchema({
       board: Board
       source: Column
       destination: Column
-    }
-
-    type DeleteCardOutput {
-      cardID: ID
     }
 
     input UpdateBoardInput {
@@ -190,33 +185,6 @@ export default createSchema({
         };
         column.cards.push(card);
         return { card };
-      },
-      deleteCard: (_, { id }) => {
-        let card: Card | null = null;
-        board_loop: for (const board of boards) {
-          for (const column of board.columns) {
-            for (const [index, columnCard] of column.cards.entries()) {
-              if (columnCard.id !== id) {
-                continue;
-              }
-
-              // we found the card
-              card = columnCard;
-
-              // remove the card from the column
-              column.cards.splice(index, 1);
-
-              // we're done
-              break board_loop;
-            }
-          }
-        }
-
-        if (!card) {
-          return { cardID: null };
-        }
-
-        return { cardID: card.id };
       },
       moveCard: (_, { input }) => {
         const { card: cardID, column: columnID, index } = input;

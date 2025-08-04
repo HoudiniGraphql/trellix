@@ -28,16 +28,6 @@ export function Card(props: CardProps) {
 
   let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
 
-  const [, deleteCard] = useMutation(
-    graphql(`
-      mutation deleteCard($cardID: ID!) {
-        deleteCard(id: $cardID) {
-          cardID @Card_delete
-        }
-      }
-    `),
-  );
-
   const [, moveCard] = useMutation(
     graphql(`
       mutation moveCard($input: MoveCardInput!) {
@@ -119,14 +109,6 @@ export function Card(props: CardProps) {
           type="submit"
           onClick={(event) => {
             event.preventDefault();
-            deleteCard({
-              variables: { cardID: card.id },
-              optimisticResponse: {
-                deleteCard: {
-                  cardID: card.id,
-                },
-              },
-            });
           }}
         >
           <Icon name="trash" />
