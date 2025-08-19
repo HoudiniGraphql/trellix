@@ -4,6 +4,7 @@ const config = {
 	plugins: {
 		'houdini-react': {},
 	},
+  runtimeDir: ".houdini",
 }
 
 export default config

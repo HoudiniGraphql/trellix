@@ -16,7 +16,7 @@ node_modules
 dist
 dist-ssr
 *.local
-$houdini
+.houdini
 
 # Editor directories and files
 .vscode/*
@@ -28,3 +28,4 @@ $houdini
 *.njsproj
 *.sln
 *.sw?
+database.sqlite
