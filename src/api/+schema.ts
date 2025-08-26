@@ -1,7 +1,6 @@
 import { createSchema } from "graphql-yoga";
 import type { DatabaseSync, SQLOutputValue } from "node:sqlite";
 
-
 export default createSchema({
   typeDefs: `
     type Query {
@@ -106,12 +105,20 @@ export default createSchema({
     // ---------- Queries ----------
     Query: {
       boards: (_: unknown, __: unknown, { db }: Ctx): GQLBoard[] => {
-        const stmt = db.prepare("SELECT id, name, color FROM boards ORDER BY id");
+        const stmt = db.prepare(
+          "SELECT id, name, color FROM boards ORDER BY id",
+        );
         return stmt.all().map(mapBoard);
       },
 
-      board: (_: unknown, { id }: { id: string }, { db }: Ctx): GQLBoard | null => {
-        const stmt = db.prepare("SELECT id, name, color FROM boards WHERE id = ?");
+      board: (
+        _: unknown,
+        { id }: { id: string },
+        { db }: Ctx,
+      ): GQLBoard | null => {
+        const stmt = db.prepare(
+          "SELECT id, name, color FROM boards WHERE id = ?",
+        );
         const row = stmt.get(toInt(id));
         return row ? mapBoard(row) : null;
       },
@@ -121,7 +128,7 @@ export default createSchema({
     Board: {
       columns: (board: GQLBoard, _: unknown, { db }: Ctx): GQLColumn[] => {
         const stmt = db.prepare(
-          "SELECT id, name, board_id FROM columns WHERE board_id = ? ORDER BY id"
+          "SELECT id, name, board_id FROM columns WHERE board_id = ? ORDER BY id",
         );
         return stmt.all(toInt(board.id)).map(mapColumn);
       },
@@ -133,7 +140,7 @@ export default createSchema({
           `SELECT id, text, "order", column_id
            FROM cards
            WHERE column_id = ?
-           ORDER BY "order", id`
+           ORDER BY "order", id`,
         );
         return stmt.all(toInt(column.id)).map(mapCard);
       },
@@ -146,7 +153,7 @@ export default createSchema({
           `SELECT c.id, c.name, c.board_id
            FROM columns c
            JOIN cards   k ON k.column_id = c.id
-           WHERE k.id = ?`
+           WHERE k.id = ?`,
         );
         const row = stmt.get(toInt(card.id));
         if (!row) throw new Error("Column not found for card");
@@ -156,9 +163,13 @@ export default createSchema({
 
     // ---------- Mutations ----------
     Mutation: {
-      createBoard: (_: unknown, { input }: { input: { name: string; color: string } }, { db }: Ctx) => {
+      createBoard: (
+        _: unknown,
+        { input }: { input: { name: string; color: string } },
+        { db }: Ctx,
+      ) => {
         const insert = db.prepare(
-          "INSERT INTO boards (name, color) VALUES (?, ?)"
+          "INSERT INTO boards (name, color) VALUES (?, ?)",
         );
         const { lastInsertRowid } = insert.run(input.name, input.color);
         const row = db
@@ -169,26 +180,45 @@ export default createSchema({
 
       deleteBoard: (_: unknown, { id }: { id: string }, { db }: Ctx) => {
         const bid = toInt(id);
-        const exists = db.prepare("SELECT id FROM boards WHERE id = ?").get(bid);
+        const exists = db
+          .prepare("SELECT id FROM boards WHERE id = ?")
+          .get(bid);
         if (!exists) return { boardID: null };
         const del = db.prepare("DELETE FROM boards WHERE id = ?");
         del.run(bid);
         return { boardID: toID(bid) };
       },
 
-      updateBoard: (_: unknown, { input }: { input: { id: string; name?: string | null; color?: string | null } }, { db }: Ctx) => {
+      updateBoard: (
+        _: unknown,
+        {
+          input,
+        }: {
+          input: { id: string; name?: string | null; color?: string | null };
+        },
+        { db }: Ctx,
+      ) => {
         const bid = toInt(input.id);
-        const current = db.prepare("SELECT id, name, color FROM boards WHERE id = ?").get(bid);
+        const current = db
+          .prepare("SELECT id, name, color FROM boards WHERE id = ?")
+          .get(bid);
         if (!current) return { board: null };
 
-        db.prepare("UPDATE boards SET name = COALESCE(?, name), color = COALESCE(?, color) WHERE id = ?")
-          .run(input.name ?? null, input.color ?? null, bid);
+        db.prepare(
+          "UPDATE boards SET name = COALESCE(?, name), color = COALESCE(?, color) WHERE id = ?",
+        ).run(input.name ?? null, input.color ?? null, bid);
 
-        const row = db.prepare("SELECT id, name, color FROM boards WHERE id = ?").get(bid)!;
+        const row = db
+          .prepare("SELECT id, name, color FROM boards WHERE id = ?")
+          .get(bid)!;
         return { board: mapBoard(row) };
       },
 
-      createColumn: (_: unknown, { input }: { input: { board: string; name: string } }, { db }: Ctx) => {
+      createColumn: (
+        _: unknown,
+        { input }: { input: { board: string; name: string } },
+        { db }: Ctx,
+      ) => {
         const bid = toInt(input.board);
         const board = db.prepare("SELECT id FROM boards WHERE id = ?").get(bid);
         if (!board) return { column: null };
@@ -203,12 +233,21 @@ export default createSchema({
         return { column: mapColumn(row) };
       },
 
-      updateColumn: (_: unknown, { input }: { input: { id: string; name: string } }, { db }: Ctx) => {
+      updateColumn: (
+        _: unknown,
+        { input }: { input: { id: string; name: string } },
+        { db }: Ctx,
+      ) => {
         const cid = toInt(input.id);
-        const exists = db.prepare("SELECT id FROM columns WHERE id = ?").get(cid);
+        const exists = db
+          .prepare("SELECT id FROM columns WHERE id = ?")
+          .get(cid);
         if (!exists) return { column: null };
 
-        db.prepare("UPDATE columns SET name = ? WHERE id = ?").run(input.name, cid);
+        db.prepare("UPDATE columns SET name = ? WHERE id = ?").run(
+          input.name,
+          cid,
+        );
 
         const row = db
           .prepare("SELECT id, name, board_id FROM columns WHERE id = ?")
@@ -216,103 +255,197 @@ export default createSchema({
         return { column: mapColumn(row) };
       },
 
-      createCard: (_: unknown, { input }: { input: { text: string; column: string } }, { db }: Ctx) => {
+      createCard: (
+        _: unknown,
+        { input }: { input: { text: string; column: string } },
+        { db }: Ctx,
+      ) => {
         const cid = toInt(input.column);
-        const column = db.prepare("SELECT id FROM columns WHERE id = ?").get(cid);
+        const column = db
+          .prepare("SELECT id FROM columns WHERE id = ?")
+          .get(cid);
         if (!column) return { card: null };
 
-        const nextOrder =
-          db
-            .prepare('SELECT COALESCE(MAX("order") + 1, 0) AS "order" FROM cards WHERE column_id = ?')
-            .get(cid)!.order;
+        const nextOrder = db
+          .prepare(
+            'SELECT COALESCE(MAX("order") + 1, 0) AS "order" FROM cards WHERE column_id = ?',
+          )
+          .get(cid)!.order;
 
         const { lastInsertRowid } = db
           .prepare(
-            'INSERT INTO cards (column_id, text, "order") VALUES (?, ?, ?)'
+            'INSERT INTO cards (column_id, text, "order") VALUES (?, ?, ?)',
           )
           .run(cid, input.text, nextOrder);
 
         const row = db
-          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+          .prepare(
+            'SELECT id, text, "order", column_id FROM cards WHERE id = ?',
+          )
           .get(Number(lastInsertRowid))!;
         return { card: mapCard(row) };
       },
 
       // Move a card to another column at a specific index, reindexing both columns.
-      moveCard: (_: unknown, { input }: { input: { card: string; column: string; index: number } }, { db }: Ctx) => {
+      moveCard: (
+        _: unknown,
+        { input }: { input: { card: string; column: string; index: number } },
+        { db }: Ctx,
+      ) => {
         const cardId = toInt(input.card);
-        const destId = toInt(input.column);
-        const destIndex = input.index;
+        const destColId = toInt(input.column);
+        let destIndex = input.index;
 
-        // Load source card + source column + board
-        const card = db
+        // Load source card + its column + source board
+        const src = db
           .prepare(
-            `SELECT k.id, k.text, k."order", k.column_id,
-                    c.name AS column_name, c.board_id
-             FROM cards k
-             JOIN columns c ON c.id = k.column_id
-             WHERE k.id = ?`
+            `
+              SELECT k.id, k.text, k."order" AS src_order, k.column_id AS src_col_id,
+                     c.board_id AS src_board_id
+              FROM cards k
+              JOIN columns c ON c.id = k.column_id
+              WHERE k.id = ?
+            `,
           )
-          .get(cardId);
-        if (!card) throw new Error("Card not found");
+          .get(cardId) as
+          | {
+              id: number;
+              text: string;
+              src_order: number;
+              src_col_id: number;
+              src_board_id: number;
+            }
+          | undefined;
 
-        const sourceColId = card.column_id;
+        if (!src) throw new Error("Card not found");
 
-        // Load destination column + its board
-        const destination = db
-          .prepare("SELECT id, name, board_id FROM columns WHERE id = ?")
-          .get(destId);
-        if (!destination) throw new Error("Destination column not found");
+        const destCol = db
+          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+          .get(destColId) as
+          | { id: number; name: string; board_id: number }
+          | undefined;
 
-        // Load the source board (to match your original return shape)
-        const sourceBoard = db
-          .prepare("SELECT id, name, color FROM boards WHERE id = ?")
-          .get(card.board_id)!;
+        if (!destCol) throw new Error("Destination column not found");
 
-        // Reindex & move atomically
+        const srcColId = src.src_col_id;
+        const srcOrder = src.src_order;
+
+        // Counts for clamping
+        const srcCount = (
+          db
+            .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
+            .get(srcColId) as { n: number }
+        ).n;
+        const destCount = (
+          db
+            .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
+            .get(destColId) as { n: number }
+        ).n;
+
         tx(db, () => {
-          // Close the gap in the source column
-          db.prepare(
-            'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
-          ).run(sourceColId, card.order);
+          if (srcColId === destColId) {
+            // ----- Same-column reorder -----
+            // Clamp to [0, srcCount-1] (final index in the same list)
+            const maxIdx = Math.max(
+              0,
+              Math.min(destIndex, Math.max(0, srcCount - 1)),
+            );
+            if (maxIdx === srcOrder) return; // no-op
 
-          // Make room in destination at the desired index
-          db.prepare(
-            'UPDATE cards SET "order" = "order" + 1 WHERE column_id = ? AND "order" >= ?'
-          ).run(destId, destIndex);
+            if (maxIdx < srcOrder) {
+              // Moving up:
+              // Shift DOWN items in [maxIdx, srcOrder-1] by +1, put card at maxIdx
+              db.prepare(
+                `
+                  UPDATE cards
+                  SET "order" = "order" + 1
+                  WHERE column_id = ? AND "order" >= ? AND "order" < ?
+                `,
+              ).run(srcColId, maxIdx, srcOrder);
 
-          // Move the card
-          db.prepare(
-            'UPDATE cards SET column_id = ?, "order" = ? WHERE id = ?'
-          ).run(destId, destIndex, cardId);
+              db.prepare(`UPDATE cards SET "order" = ? WHERE id = ?`).run(
+                maxIdx,
+                cardId,
+              );
+            } else {
+              // Moving down:
+              // Shift UP items in (srcOrder, maxIdx] by -1, put card at maxIdx
+              db.prepare(
+                `
+                  UPDATE cards
+                  SET "order" = "order" - 1
+                  WHERE column_id = ? AND "order" > ? AND "order" <= ?
+                `,
+              ).run(srcColId, srcOrder, maxIdx);
+
+              db.prepare(`UPDATE cards SET "order" = ? WHERE id = ?`).run(
+                maxIdx,
+                cardId,
+              );
+            }
+          } else {
+            // ----- Cross-column move -----
+            // Clamp to [0, destCount] (insert slot; destCount==0 => becomes 0)
+            const clampedDest = Math.max(0, Math.min(destIndex, destCount));
+
+            // Close gap in source
+            db.prepare(
+              `
+                UPDATE cards
+                SET "order" = "order" - 1
+                WHERE column_id = ? AND "order" > ?
+              `,
+            ).run(srcColId, srcOrder);
+
+            // Open gap in destination
+            db.prepare(
+              `
+                UPDATE cards
+                SET "order" = "order" + 1
+                WHERE column_id = ? AND "order" >= ?
+              `,
+            ).run(destColId, clampedDest);
+
+            // Move
+            db.prepare(
+              `UPDATE cards SET column_id = ?, "order" = ? WHERE id = ?`,
+            ).run(destColId, clampedDest, cardId);
+          }
         });
 
-        // Return fresh rows
+        // Fresh rows for return payload
         const cardRow = db
-          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+          .prepare(
+            `SELECT id, text, "order", column_id FROM cards WHERE id = ?`,
+          )
           .get(cardId)!;
-
         const sourceCol = db
-          .prepare("SELECT id, name, board_id FROM columns WHERE id = ?")
-          .get(sourceColId)!;
+          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+          .get(srcColId)!;
+        const destColRow = db
+          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+          .get(destColId)!;
 
-        const destCol = destination; // already loaded
+        // Return the board associated with the destination column (post-move owner)
+        const boardRow = db
+          .prepare(`SELECT id, name, color FROM boards WHERE id = ?`)
+          .get(destColRow.board_id)!;
 
         return {
           card: mapCard(cardRow),
-          board: mapBoard(sourceBoard),
+          board: mapBoard(boardRow),
           source: mapColumn(sourceCol),
-          destination: mapColumn(destCol),
+          destination: mapColumn(destColRow),
         };
       },
     },
   },
 });
 
-// GraphQL-facing shapes 
-type GQLBoard  = { id: string; name: string; color: string };
+// GraphQL-facing shapes
+type GQLBoard = { id: string; name: string; color: string };
 type GQLColumn = { id: string; name: string };
-type GQLCard   = { id: string; text: string; order: number };
+type GQLCard = { id: string; text: string; order: number };
 
 type Ctx = { db: DatabaseSync };
 
@@ -321,13 +454,21 @@ const toID = (n: number | bigint) => String(n);
 const toInt = (id: string) => Number.parseInt(id, 10);
 
 function mapBoard(row: Record<string, SQLOutputValue>): GQLBoard {
-  return { id: toID(row.id as number), name: row.name as string, color: row.color as string};
+  return {
+    id: toID(row.id as number),
+    name: row.name as string,
+    color: row.color as string,
+  };
 }
 function mapColumn(row: Record<string, SQLOutputValue>): GQLColumn {
-  return { id: toID(row.id as number), name: row.name as string};
+  return { id: toID(row.id as number), name: row.name as string };
 }
 function mapCard(row: Record<string, SQLOutputValue>): GQLCard {
-  return { id: toID(row.id as number), text: row.text as string, order: row.order as number };
+  return {
+    id: toID(row.id as number),
+    text: row.text as string,
+    order: row.order as number,
+  };
 }
 
 function tx<T>(db: DatabaseSync, fn: () => T): T {

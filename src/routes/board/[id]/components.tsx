@@ -51,15 +51,17 @@ export function EditableText({
   onChange: (value: string) => void;
 }) {
   let [edit, setEdit] = useState(false);
-  let inputRef = useRef<HTMLInputElement>(null) as MutableRefObject<HTMLInputElement | null>;
+  let inputRef = useRef<HTMLInputElement>(
+    null,
+  ) as MutableRefObject<HTMLInputElement | null>;
   let buttonRef = useRef<HTMLButtonElement>(null);
 
   return edit ? (
     <form
       method="post"
       onSubmit={() => {
-        invariant(inputRef.current)
-        onChange(inputRef.current.value)
+        invariant(inputRef.current);
+        onChange(inputRef.current.value);
         flushSync(() => {
           setEdit(false);
         });
@@ -68,8 +70,8 @@ export function EditableText({
     >
       <input
         required
-        ref={ref => {
-          inputRef.current = ref
+        ref={(ref) => {
+          inputRef.current = ref;
         }}
         type="text"
         aria-label={inputLabel}

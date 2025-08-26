@@ -28,7 +28,7 @@ export function NewCard(props: {
       mutation createCard($text: String!, $columnID: ID!) {
         createCard(input: { text: $text, column: $columnID }) {
           card {
-            id 
+            id
             text
             order
             column {
