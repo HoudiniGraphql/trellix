@@ -23,14 +23,14 @@ importers:
         specifier: 4.0.4
         version: 4.0.4(graphql@15.8.0)
       houdini:
-        specifier: ^2.0.0-next.6
-        version: 2.0.0-next.6(vite@4.5.3(@types/node@24.3.0))
+        specifier: ^2.0.0-next.7
+        version: 2.0.0-next.7(vite@4.5.3(@types/node@24.3.0))
       houdini-adapter-auto:
         specifier: ^1.2.57
         version: 1.2.57
       houdini-react:
-        specifier: 2.0.0-next.7
-        version: 2.0.0-next.7(vite@4.5.3(@types/node@24.3.0))
+        specifier: 2.0.0-next.9
+        version: 2.0.0-next.9(vite@4.5.3(@types/node@24.3.0))
       react:
         specifier: 19.0.0-canary-2b036d3f1-20240327
         version: 19.0.0-canary-2b036d3f1-20240327
@@ -1124,15 +1124,15 @@ packages:
   houdini-adapter-auto@1.2.57:
     resolution: {integrity: sha512-CyvyipsemWdgBq6yiveEYYXc7djWDofjBw1HcZWJwFpjDQ1kRgIUTaHJ7Sw2HY862vQfJ1i4CWHImhzBab2fLw==}
 
-  houdini-react@2.0.0-next.7:
-    resolution: {integrity: sha512-rlxJHlCdz/4gGZ8z6Jy+mYMZSlyLAK84MxpLH2e1dMRuCtSgTUSG0NclouJIXhcCXC+1dTwhQr8fWjduL4bitw==}
+  houdini-react@2.0.0-next.9:
+    resolution: {integrity: sha512-supjcAeTOmNfahL3QV91iQfX66FxSeciepaReJdl9C9ytafIxz4gb1amppSjKuQiukV6XMWOw7gUzAUCKfELRg==}
 
   houdini@1.2.57:
     resolution: {integrity: sha512-hv/5l9uppT7qpdO3FaRK1lkOPxsRUXiUzp/lwB6basf1apfdUNxEcTyGuCe9SVehWVZNetOVK5Pe6Z99Js2V2A==}
     hasBin: true
 
-  houdini@2.0.0-next.6:
-    resolution: {integrity: sha512-Jkj+WdvqGEfKnaMo2zWpUVatwjcQLpNvDTREuwrV71iJfNCX0CW1WWlhBCCJSW/5rfd0Cz05N3HnROoAojgLLQ==}
+  houdini@2.0.0-next.7:
+    resolution: {integrity: sha512-44dx2Ze8BGN+LXbYOnSdv30k05QzqRs15GOoS/jRbCXEl42erYdCicuF0xza+FiiQ7jw/eYysV8rfAC8ZPhKsg==}
     hasBin: true
     peerDependencies:
       vite: ^6.0.3
@@ -2879,7 +2879,7 @@ snapshots:
       houdini: 1.2.57
       import-meta-resolve: 3.1.1
 
-  houdini-react@2.0.0-next.7(vite@4.5.3(@types/node@24.3.0)):
+  houdini-react@2.0.0-next.9(vite@4.5.3(@types/node@24.3.0)):
     dependencies:
       '@babel/parser': 7.28.3
       '@babel/types': 7.28.2
@@ -2891,7 +2891,7 @@ snapshots:
       express: 4.21.2
       graphql: 15.8.0
       graphql-yoga: 4.0.4(graphql@15.8.0)
-      houdini: 2.0.0-next.6(vite@4.5.3(@types/node@24.3.0))
+      houdini: 2.0.0-next.7(vite@4.5.3(@types/node@24.3.0))
       react: 19.0.0-canary-2b036d3f1-20240327
       react-dom: 19.0.0-canary-2b036d3f1-20240327(react@19.0.0-canary-2b036d3f1-20240327)
       react-streaming-compat: 0.3.18(react-dom@19.0.0-canary-2b036d3f1-20240327(react@19.0.0-canary-2b036d3f1-20240327))(react@19.0.0-canary-2b036d3f1-20240327)
@@ -2930,7 +2930,7 @@ snapshots:
       recast: 0.23.9
       vite-plugin-watch-and-run: 1.7.0
 
-  houdini@2.0.0-next.6(vite@4.5.3(@types/node@24.3.0)):
+  houdini@2.0.0-next.7(vite@4.5.3(@types/node@24.3.0)):
     dependencies:
       '@babel/parser': 7.28.3
       '@clack/prompts': 0.6.3

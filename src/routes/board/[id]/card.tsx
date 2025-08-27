@@ -26,7 +26,7 @@ export function Card(props: CardProps) {
 
   const [, moveCard] = useMutation(
     graphql(`
-      mutation moveCard($input: MoveCardInput!) {
+      mutation moveCardAfterCard($input: MoveCardInput!) {
         moveCard(input: $input) {
           source {
             id

@@ -55,6 +55,29 @@ export function Column(props: ColumnProps) {
 
   const items = column.cards;
 
+  const [, moveCard] = useMutation(
+    graphql(`
+      mutation moveCard($input: MoveCardInput!) {
+        moveCard(input: $input) {
+          source {
+            id
+            cards {
+              id
+              order
+            }
+          }
+          destination {
+            id
+            cards {
+              id
+              order
+            }
+          }
+        }
+      }
+    `),
+  );
+
   return (
     <div
       className={
@@ -76,6 +99,16 @@ export function Column(props: ColumnProps) {
       onDrop={(event) => {
         let transfer = JSON.parse(event.dataTransfer.getData("card"));
         invariant(transfer.id, "missing transfer.id");
+
+        moveCard({
+          variables: {
+            input: {
+              card: transfer.id,
+              column: column.id,
+              index: 1,
+            },
+          },
+        });
 
         setAcceptDrop(false);
       }}
