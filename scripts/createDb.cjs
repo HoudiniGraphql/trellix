@@ -16,6 +16,7 @@ database.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
     "order" INTEGER NOT NULL,
-    column_id INTEGER NOT NULL REFERENCES columns(id)
+    column_id INTEGER NOT NULL REFERENCES columns(id),
+    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 `)

@@ -1,7 +1,7 @@
-import { graphql, useFragment, useMutation } from "$houdini";
 import { useState } from "react";
-import { Icon } from "~/components/icons";
+import { graphql, useFragment, useMutation } from "$houdini";
 import type { BoardInfoCard_card } from "$houdini";
+import { Icon } from "~/components/icons";
 
 interface CardProps {
   card: BoardInfoCard_card;
