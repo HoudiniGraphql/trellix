@@ -17,6 +17,6 @@ database.exec(`
     text TEXT NOT NULL,
     "order" INTEGER NOT NULL,
     column_id INTEGER NOT NULL REFERENCES columns(id),
-    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    dateCreated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 `)

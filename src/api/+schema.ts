@@ -104,7 +104,7 @@ export default createSchema({
   resolvers: {
     // ---------- Queries ----------
     Query: {
-      boards: (_: unknown, __: unknown, { db }: Ctx): GQLBoard[] => {
+      boards: (_: unknown, __: unknown, { db }: Ctx): Board[] => {
         const stmt = db.prepare(
           "SELECT id, name, color FROM boards ORDER BY id",
         );
@@ -115,7 +115,7 @@ export default createSchema({
         _: unknown,
         { id }: { id: string },
         { db }: Ctx,
-      ): GQLBoard | null => {
+      ): Board | null => {
         const stmt = db.prepare(
           "SELECT id, name, color FROM boards WHERE id = ?",
         );
@@ -126,7 +126,7 @@ export default createSchema({
 
     // ---------- Field resolvers ----------
     Board: {
-      columns: (board: GQLBoard, _: unknown, { db }: Ctx): GQLColumn[] => {
+      columns: (board: Board, _: unknown, { db }: Ctx): Column[] => {
         const stmt = db.prepare(
           "SELECT id, name, board_id FROM columns WHERE board_id = ? ORDER BY id",
         );
@@ -135,9 +135,9 @@ export default createSchema({
     },
 
     Column: {
-      cards: (column: GQLColumn, _: unknown, { db }: Ctx): GQLCard[] => {
+      cards: (column: Column, _: unknown, { db }: Ctx): Card[] => {
         const stmt = db.prepare(
-          `SELECT id, text, "order", column_id
+          `SELECT *
            FROM cards
            WHERE column_id = ?
            ORDER BY "order", id`,
@@ -148,7 +148,7 @@ export default createSchema({
 
     Card: {
       // Resolve the column by joining through cards -> columns
-      column: (card: GQLCard, _: unknown, { db }: Ctx): GQLColumn => {
+      column: (card: Card, _: unknown, { db }: Ctx): Column => {
         const stmt = db.prepare(
           `SELECT c.id, c.name, c.board_id
            FROM columns c
@@ -274,13 +274,13 @@ export default createSchema({
 
         const { lastInsertRowid } = db
           .prepare(
-            'INSERT INTO cards (column_id, text, "order") VALUES (?, ?, ?)',
+            'INSERT INTO cards (column_id, text, "order", dateCreated) VALUES (?, ?, ?, ?)',
           )
-          .run(cid, input.text, nextOrder);
+          .run(cid, input.text, nextOrder, new Date().toISOString());
 
         const row = db
           .prepare(
-            'SELECT id, text, "order", column_id FROM cards WHERE id = ?',
+            'SELECT id, text, "order", column_id, dateCreated FROM cards WHERE id = ?',
           )
           .get(Number(lastInsertRowid))!;
         return { card: mapCard(row) };
@@ -443,9 +443,9 @@ export default createSchema({
 });
 
 // GraphQL-facing shapes
-type GQLBoard = { id: string; name: string; color: string };
-type GQLColumn = { id: string; name: string };
-type GQLCard = { id: string; text: string; order: number };
+type Board = { id: string; name: string; color: string };
+type Column = { id: string; name: string };
+type Card = { id: string; text: string; order: number; dateCreated: string };
 
 type Ctx = { db: DatabaseSync };
 
@@ -453,21 +453,22 @@ type Ctx = { db: DatabaseSync };
 const toID = (n: number | bigint) => String(n);
 const toInt = (id: string) => Number.parseInt(id, 10);
 
-function mapBoard(row: Record<string, SQLOutputValue>): GQLBoard {
+function mapBoard(row: Record<string, SQLOutputValue>): Board {
   return {
     id: toID(row.id as number),
     name: row.name as string,
     color: row.color as string,
   };
 }
-function mapColumn(row: Record<string, SQLOutputValue>): GQLColumn {
+function mapColumn(row: Record<string, SQLOutputValue>): Column {
   return { id: toID(row.id as number), name: row.name as string };
 }
-function mapCard(row: Record<string, SQLOutputValue>): GQLCard {
+function mapCard(row: Record<string, SQLOutputValue>): Card {
   return {
     id: toID(row.id as number),
     text: row.text as string,
     order: row.order as number,
+    dateCreated: row.dateCreated as string,
   };
 }
 

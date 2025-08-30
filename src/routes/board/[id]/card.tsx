@@ -98,7 +98,9 @@ export function Card(props: CardProps) {
           event.dataTransfer.setData("fromColumn", JSON.stringify(card));
         }}
       >
-        <h3 className="mb-2">{card.text}</h3>
+        <div className="mb-2 gap-2 flex flex-row">
+          <h3 >{card.text}</h3>
+        </div>
         <button
           aria-label="Delete card"
           className="absolute top-[0.25rem] right-4 hover:text-brand-red"

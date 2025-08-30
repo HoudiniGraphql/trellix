@@ -1,0 +1,48 @@
+
+-----
+
+import { DateTimeResolver, DateTimeTypeDefinition } from 'graphql-scalars'
+
+${DateTimeTypeDefinition}
+
+dateCreated: DateTime!
+
+dateCreated: (card: Card): string => {
+  return new Date(card.dateCreated).toISOString()
+},
+ 
+DateTime: DateTimeResolver
+
+++
+
+import { formatDistance } from 'date-fns'
+
+<span>
+  ({formatDistance(card.dateCreated, new Date(), { addSuffix: true })})
+</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ---
