@@ -59,6 +59,11 @@ export function Column(props: ColumnProps) {
     graphql(`
       mutation moveCard($input: MoveCardInput!) {
         moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
           source {
             id
             cards {
@@ -113,7 +118,7 @@ export function Column(props: ColumnProps) {
         setAcceptDrop(false);
       }}
     >
-      <div className="p-2">
+      <div className="p-2 flex flex-row pr-3 items-center">
         <EditableText
           value={column.name}
           onChange={(val) => {

@@ -1,10 +1,7 @@
-import { createYoga } from "graphql-yoga";
+import { Server } from "$houdini/server";
 import { DatabaseSync } from "node:sqlite";
-import schema from "./+schema";
 
-export default createYoga({
-  schema,
-  graphqlEndpoint: "_api",
+export default new Server({
   context: () => {
     return {
       db: new DatabaseSync("./database.sqlite"),

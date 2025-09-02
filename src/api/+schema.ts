@@ -102,7 +102,6 @@ export default createSchema({
     }
   `,
   resolvers: {
-    // ---------- Queries ----------
     Query: {
       boards: (_: unknown, __: unknown, { db }: Ctx): Board[] => {
         const stmt = db.prepare(
@@ -286,107 +285,107 @@ export default createSchema({
         return { card: mapCard(row) };
       },
 
-      // Move a card to another column at a specific index, reindexing both columns.
-      moveCard: (
+      moveCard: async (
         _: unknown,
-        { input }: { input: { card: string; column: string; index: number } },
-        { db }: Ctx,
+        { input }: { input: { card: string; column: string; index: number, delay?: number } },
+        ctx: Ctx,
       ) => {
         const cardId = toInt(input.card);
         const destColId = toInt(input.column);
-        let destIndex = input.index;
+        const desiredIndex = input.index;
 
-        // Load source card + its column + source board
-        const src = db
-          .prepare(
-            `
-              SELECT k.id, k.text, k."order" AS src_order, k.column_id AS src_col_id,
-                     c.board_id AS src_board_id
-              FROM cards k
-              JOIN columns c ON c.id = k.column_id
-              WHERE k.id = ?
-            `,
-          )
-          .get(cardId) as
-          | {
-              id: number;
-              text: string;
-              src_order: number;
-              src_col_id: number;
-              src_board_id: number;
-            }
-          | undefined;
+  
 
-        if (!src) throw new Error("Card not found");
+        // do everything inside a cancellable savepoint
+        return tx(ctx, (db) => {
+          // Load source card + its column/board
+          const src = db
+            .prepare(
+              `
+                SELECT k.id, k.text, k."order" AS src_order, k.column_id AS src_col_id,
+                       c.board_id AS src_board_id
+                FROM cards k
+                JOIN columns c ON c.id = k.column_id
+                WHERE k.id = ?
+              `,
+            )
+            .get(cardId) as
+            | {
+                id: number;
+                text: string;
+                src_order: number;
+                src_col_id: number;
+                src_board_id: number;
+              }
+            | undefined;
 
-        const destCol = db
-          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
-          .get(destColId) as
-          | { id: number; name: string; board_id: number }
-          | undefined;
+          if (!src) throw new Error("Card not found");
 
-        if (!destCol) throw new Error("Destination column not found");
+          const destCol = db
+            .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+            .get(destColId) as
+            | { id: number; name: string; board_id: number }
+            | undefined;
 
-        const srcColId = src.src_col_id;
-        const srcOrder = src.src_order;
+          if (!destCol) throw new Error("Destination column not found");
 
-        // Counts for clamping
-        const srcCount = (
-          db
-            .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
-            .get(srcColId) as { n: number }
-        ).n;
-        const destCount = (
-          db
-            .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
-            .get(destColId) as { n: number }
-        ).n;
+          const srcColId = src.src_col_id;
+          const srcOrder = src.src_order;
 
-        tx(db, () => {
+          // Counts for clamping (read inside the txn for a consistent snapshot)
+          const srcCount = (
+            db
+              .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
+              .get(srcColId) as { n: number }
+          ).n;
+          const destCount = (
+            db
+              .prepare(`SELECT COUNT(*) AS n FROM cards WHERE column_id = ?`)
+              .get(destColId) as { n: number }
+          ).n;
+
           if (srcColId === destColId) {
-            // ----- Same-column reorder -----
-            // Clamp to [0, srcCount-1] (final index in the same list)
-            const maxIdx = Math.max(
+            // ---------- Same-column reorder ----------
+            // Final valid index in same list is [0, srcCount-1]
+            const finalIndex = Math.max(
               0,
-              Math.min(destIndex, Math.max(0, srcCount - 1)),
+              Math.min(desiredIndex, Math.max(0, srcCount - 1)),
             );
-            if (maxIdx === srcOrder) return; // no-op
-
-            if (maxIdx < srcOrder) {
-              // Moving up:
-              // Shift DOWN items in [maxIdx, srcOrder-1] by +1, put card at maxIdx
+            if (finalIndex === srcOrder) {
+              // no-op: still return the fresh rows
+            } else if (finalIndex < srcOrder) {
+              // Move up: shift DOWN items in [finalIndex, srcOrder-1] by +1
               db.prepare(
                 `
                   UPDATE cards
                   SET "order" = "order" + 1
                   WHERE column_id = ? AND "order" >= ? AND "order" < ?
                 `,
-              ).run(srcColId, maxIdx, srcOrder);
+              ).run(srcColId, finalIndex, srcOrder);
 
               db.prepare(`UPDATE cards SET "order" = ? WHERE id = ?`).run(
-                maxIdx,
+                finalIndex,
                 cardId,
               );
             } else {
-              // Moving down:
-              // Shift UP items in (srcOrder, maxIdx] by -1, put card at maxIdx
+              // Move down: shift UP items in srcOrder, finalIndex] by -1
               db.prepare(
                 `
                   UPDATE cards
                   SET "order" = "order" - 1
                   WHERE column_id = ? AND "order" > ? AND "order" <= ?
                 `,
-              ).run(srcColId, srcOrder, maxIdx);
+              ).run(srcColId, srcOrder, finalIndex);
 
               db.prepare(`UPDATE cards SET "order" = ? WHERE id = ?`).run(
-                maxIdx,
+                finalIndex,
                 cardId,
               );
             }
           } else {
-            // ----- Cross-column move -----
-            // Clamp to [0, destCount] (insert slot; destCount==0 => becomes 0)
-            const clampedDest = Math.max(0, Math.min(destIndex, destCount));
+            // ---------- Cross-column move ----------
+            // Insert slot is [0, destCount] (destCount==0 -> 0)
+            const insertAt = Math.max(0, Math.min(desiredIndex, destCount));
 
             // Close gap in source
             db.prepare(
@@ -404,39 +403,37 @@ export default createSchema({
                 SET "order" = "order" + 1
                 WHERE column_id = ? AND "order" >= ?
               `,
-            ).run(destColId, clampedDest);
+            ).run(destColId, insertAt);
 
-            // Move
+            // Move card
             db.prepare(
               `UPDATE cards SET column_id = ?, "order" = ? WHERE id = ?`,
-            ).run(destColId, clampedDest, cardId);
+            ).run(destColId, insertAt, cardId);
           }
+
+          // Fresh rows for return payload (still inside txn for consistency)
+          const cardRow = db
+            .prepare(
+              `SELECT id, text, "order", column_id FROM cards WHERE id = ?`,
+            )
+            .get(cardId)!;
+          const sourceCol = db
+            .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+            .get(srcColId)!;
+          const destColRow = db
+            .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
+            .get(destColId)!;
+          const boardRow = db
+            .prepare(`SELECT id, name, color FROM boards WHERE id = ?`)
+            .get(destColRow.board_id)!;
+
+          return {
+            card: mapCard(cardRow),
+            board: mapBoard(boardRow),
+            source: mapColumn(sourceCol),
+            destination: mapColumn(destColRow),
+          };
         });
-
-        // Fresh rows for return payload
-        const cardRow = db
-          .prepare(
-            `SELECT id, text, "order", column_id FROM cards WHERE id = ?`,
-          )
-          .get(cardId)!;
-        const sourceCol = db
-          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
-          .get(srcColId)!;
-        const destColRow = db
-          .prepare(`SELECT id, name, board_id FROM columns WHERE id = ?`)
-          .get(destColId)!;
-
-        // Return the board associated with the destination column (post-move owner)
-        const boardRow = db
-          .prepare(`SELECT id, name, color FROM boards WHERE id = ?`)
-          .get(destColRow.board_id)!;
-
-        return {
-          card: mapCard(cardRow),
-          board: mapBoard(boardRow),
-          source: mapColumn(sourceCol),
-          destination: mapColumn(destColRow),
-        };
       },
     },
   },
@@ -447,7 +444,7 @@ type Board = { id: string; name: string; color: string };
 type Column = { id: string; name: string };
 type Card = { id: string; text: string; order: number; dateCreated: string };
 
-type Ctx = { db: DatabaseSync };
+type Ctx = { db: DatabaseSync; session: Record<string, any>; request: Request };
 
 // ---------- Small helpers ----------
 const toID = (n: number | bigint) => String(n);
@@ -472,14 +469,42 @@ function mapCard(row: Record<string, SQLOutputValue>): Card {
   };
 }
 
-function tx<T>(db: DatabaseSync, fn: () => T): T {
-  db.exec("BEGIN");
+function tx<T>(
+  ctx: Ctx,
+  fn: (db: DatabaseSync) => T,
+): T {
+  // SAVEPOINT works even if a transaction is already open
+  ctx.db.exec("SAVEPOINT gql_move");
+  let released = false;
+
+  const onAbort = () => {
+    if (!released) {
+      try {
+        ctx.db.exec("ROLLBACK TO gql_move");
+        ctx.db.exec("RELEASE gql_move");
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  ctx.request.signal.addEventListener("abort", onAbort, { once: true });
   try {
-    const v = fn();
-    db.exec("COMMIT");
-    return v;
+    ctx.request.signal.throwIfAborted(); // fast-fail before doing any work
+    const result = fn(ctx.db);
+    ctx.request.signal.throwIfAborted(); // ensure we don't commit after an abort
+    ctx.db.exec("RELEASE gql_move"); // commit the savepoint
+    released = true;
+    return result;
   } catch (e) {
-    db.exec("ROLLBACK");
+    try {
+      ctx.db.exec("ROLLBACK TO gql_move");
+      ctx.db.exec("RELEASE gql_move");
+    } catch {
+      /* ignore */
+    }
     throw e;
+  } finally {
+    ctx.request.signal.removeEventListener("abort", onAbort);
   }
 }

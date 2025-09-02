@@ -47,48 +47,50 @@ import { formatDistance } from 'date-fns'
 
  ---
 
-deleteCard(id: ID!): DeleteCardOutput!   
+      deleteCard(id: ID!): DeleteCardOutput!   
 
-type DeleteCardOutput {     
-  cardID: ID
-}
+    type DeleteCardOutput {
+      cardID: ID
+    }
 
-      deleteCard: (_: unknown, { id }: { id: string }, { db }: Ctx) => {
-        const kid = toInt(id);
-        const existing = db
-          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
-          .get(kid);
-        if (!existing) return { cardID: null };
 
-        // Re-pack the source column's order to fill the gap.
-        tx(db, () => {
-          db.prepare("DELETE FROM cards WHERE id = ?").run(kid);
-          db.prepare(
-            'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
-          ).run(existing.column_id, existing.order);
+      deleteCard: (_: unknown, { id }: { id: string }, ctx: Ctx) => {
+        const cardID = toInt(id);
+        tx(ctx, (db) => {
+          const existing = db
+            .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+            .get(cardID);
+
+          if (!existing) return { cardID: null };
+            db.prepare("DELETE FROM cards WHERE id = ?").run(cardID);
+            db.prepare(
+              'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
+            ).run(existing.column_id, existing.order);
         });
 
-        return { cardID: toID(kid) };
+        return { cardID: toID(cardID) };
       },
-
-const [, deleteCard] = useMutation(
-  graphql(`
-    mutation deleteCard($cardID: ID!) {
-      deleteCard(id: $cardID) {
-        cardID @Card_delete
+      
+  const [, deleteCard] = useMutation(
+    graphql(`
+      mutation deleteCard($cardID: ID!) {
+        deleteCard(id: $cardID) {
+          cardID @Card_delete
+        }
       }
-    }
-  `),
-)
+    `),
+  )
 
-deleteCard({
-  variables: { cardID: card.id },
-  optimisticResponse: {
-    deleteCard: {
-      cardID: card.id,
-    },
-  },
-})
+
+            deleteCard({
+              variables: { cardID: card.id },
+              optimisticResponse: {
+                deleteCard: {
+                  cardID: card.id,
+                },
+              },
+            })
+
 
 
 
@@ -100,3 +102,66 @@ deleteCard({
 ---
 
 
+
+            id @optimisticKey
+
+
+          optimisticResponse: {
+            createCard: {
+              card: {
+                text,
+                order: props.nextOrder,
+                column: {
+                  id: column.id,
+                },
+              },
+            },
+          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--- 
+
+
+
+      delay: Int
+
+
+
+        if (input.delay) {
+          await new Promise((resolve) => {
+            setTimeout(resolve, input.delay)
+          })
+        }
+
+              delay: 5000,
+
+ @dedupe(cancelFirst: True, match: "Operation")
+
+  

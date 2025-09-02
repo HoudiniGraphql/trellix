@@ -20,17 +20,17 @@ importers:
         specifier: 15.8.0
         version: 15.8.0
       graphql-yoga:
-        specifier: 4.0.4
-        version: 4.0.4(graphql@15.8.0)
+        specifier: ^5.0.0
+        version: 5.15.1(graphql@15.8.0)
       houdini:
-        specifier: ^2.0.0-next.8
-        version: 2.0.0-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
+        specifier: ^2.0.0-next.9
+        version: 2.0.0-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
       houdini-adapter-auto:
-        specifier: 1.3.8-next.8
-        version: 1.3.8-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
+        specifier: 1.3.8-next.9
+        version: 1.3.8-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
       houdini-react:
-        specifier: 2.0.0-next.10
-        version: 2.0.0-next.10(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
+        specifier: 2.0.0-next.11
+        version: 2.0.0-next.11(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
       react:
         specifier: 19.0.0-canary-2b036d3f1-20240327
         version: 19.0.0-canary-2b036d3f1-20240327
@@ -230,9 +230,21 @@ packages:
     resolution: {integrity: sha512-O0Vz8E0TObT6ijAob8jYFVJavcGywKThM3UAsxUIBBVPYZTMiqI9lo2gmAnbMUnrDcAYkUTZEW9FDYPRdF5l6g==}
     engines: {node: '>=16.0.0'}
 
+  '@envelop/core@5.3.0':
+    resolution: {integrity: sha512-xvUkOWXI8JsG2OOnqiI2tOkEc52wbmIqWORr7yGc8B8E53Oh1MMGGGck4mbR80s25LnHVzfNIiIlNkuDgZRuuA==}
+    engines: {node: '>=18.0.0'}
+
+  '@envelop/instrumentation@1.0.0':
+    resolution: {integrity: sha512-cxgkB66RQB95H3X27jlnxCRNTmPuSTgmBAq6/4n2Dtv4hsk4yz8FadA1ggmd0uZzvKqWD6CR+WFgTjhDqg7eyw==}
+    engines: {node: '>=18.0.0'}
+
   '@envelop/types@4.0.1':
     resolution: {integrity: sha512-ULo27/doEsP7uUhm2iTnElx13qTO6I5FKvmLoX41cpfuw8x6e0NUFknoqhEsLzAbgz8xVS5mjwcxGCXh4lDYzg==}
     engines: {node: '>=16.0.0'}
+
+  '@envelop/types@5.2.1':
+    resolution: {integrity: sha512-CsFmA3u3c2QoLDTfEpGr4t25fjMU31nyvse7IzWTvb0ZycuPjMjb0fjlheh+PbhBYb9YLugnT2uY6Mwcg1o+Zg==}
+    engines: {node: '>=18.0.0'}
 
   '@esbuild/aix-ppc64@0.25.9':
     resolution: {integrity: sha512-OaGtL73Jck6pBKjNIe24BnFE6agGl+6KxDtTfHhy1HmhthfKouEcOhqpSL64K4/0WCtbKFLOdzD/44cJ4k9opA==}
@@ -390,8 +402,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@fastify/busboy@3.2.0':
+    resolution: {integrity: sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==}
+
   '@graphql-tools/executor@1.2.8':
     resolution: {integrity: sha512-0qZs/iuRiYRir7bBkA7oN+21wwmSMPQuFK8WcAcxUYJZRhvnlrJ8Nid++PN4OCzTgHPV70GNFyXOajseVCCffA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      graphql: 15.8.0
+
+  '@graphql-tools/executor@1.4.9':
+    resolution: {integrity: sha512-SAUlDT70JAvXeqV87gGzvDzUGofn39nvaVcVhNf12Dt+GfWHtNNO/RCn/Ea4VJaSLGzraUd41ObnN3i80EBU7w==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       graphql: 15.8.0
@@ -409,6 +430,12 @@ packages:
 
   '@graphql-tools/merge@9.1.1':
     resolution: {integrity: sha512-BJ5/7Y7GOhTuvzzO5tSBFL4NGr7PVqTJY3KeIDlVTT8YLcTXtBR+hlrC3uyEym7Ragn+zyWdHeJ9ev+nRX1X2w==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      graphql: 15.8.0
+
+  '@graphql-tools/schema@10.0.25':
+    resolution: {integrity: sha512-/PqE8US8kdQ7lB9M5+jlW8AyVjRGCKU7TSktuW3WNKSKmDO0MK1wakvb5gGdyT49MjAIb4a3LWxIpwo5VygZuw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       graphql: 15.8.0
@@ -450,13 +477,25 @@ packages:
     resolution: {integrity: sha512-JYoxwnPggH2BfO+dWlWZkDeFhyFZqaTRGLvFhy+Pjp2UxitEW6nDrw+pEDw/K9tJwMjIFMmTT9VfTqrnESmBHg==}
     engines: {node: '>=16.0.0'}
 
+  '@graphql-yoga/logger@2.0.1':
+    resolution: {integrity: sha512-Nv0BoDGLMg9QBKy9cIswQ3/6aKaKjlTh87x3GiBg2Z4RrjyrM48DvOOK0pJh1C1At+b0mUIM67cwZcFTDLN4sA==}
+    engines: {node: '>=18.0.0'}
+
   '@graphql-yoga/subscription@4.0.0':
     resolution: {integrity: sha512-0qsN/BPPZNMoC2CZ8i+P6PgiJyHh1H35aKDt37qARBDaIOKDQuvEOq7+4txUKElcmXi7DYFo109FkhSQoEajrg==}
     engines: {node: '>=16.0.0'}
 
+  '@graphql-yoga/subscription@5.0.5':
+    resolution: {integrity: sha512-oCMWOqFs6QV96/NZRt/ZhTQvzjkGB4YohBOpKM4jH/lDT4qb7Lex/aGCxpi/JD9njw3zBBtMqxbaC22+tFHVvw==}
+    engines: {node: '>=18.0.0'}
+
   '@graphql-yoga/typed-event-target@2.0.0':
     resolution: {integrity: sha512-oA/VGxGmaSDym1glOHrltw43qZsFwLLjBwvh57B79UKX/vo3+UQcRgOyE44c5RP7DCYjkrC2tuArZmb6jCzysw==}
     engines: {node: '>=16.0.0'}
+
+  '@graphql-yoga/typed-event-target@3.0.2':
+    resolution: {integrity: sha512-ZpJxMqB+Qfe3rp6uszCQoag4nSw42icURnBRfFYSOmTgEeOe4rD0vYlbA8spvCu2TlCesNTlEN9BLWtQqLxabA==}
+    engines: {node: '>=18.0.0'}
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -652,9 +691,17 @@ packages:
     peerDependencies:
       vite: ^4.1.0-beta.0
 
+  '@whatwg-node/disposablestack@0.0.6':
+    resolution: {integrity: sha512-LOtTn+JgJvX8WfBVJtF08TGrdjuFzGJc4mkP8EdDI8ADbvO7kiexYep1o8dwnt0okb0jYclCDXF13xU7Ge4zSw==}
+    engines: {node: '>=18.0.0'}
+
   '@whatwg-node/events@0.1.1':
     resolution: {integrity: sha512-AyQEn5hIPV7Ze+xFoXVU3QTHXVbWPrzaOkxtENMPMuNL6VVHrp4hHfDt9nrQpjO7BgvuM95dMtkycX5M/DZR3w==}
     engines: {node: '>=16.0.0'}
+
+  '@whatwg-node/fetch@0.10.10':
+    resolution: {integrity: sha512-watz4i/Vv4HpoJ+GranJ7HH75Pf+OkPQ63NoVmru6Srgc8VezTArB00i/oQlnn0KWh14gM42F22Qcc9SU9mo/w==}
+    engines: {node: '>=18.0.0'}
 
   '@whatwg-node/fetch@0.9.18':
     resolution: {integrity: sha512-hqoz6StCW+AjV/3N+vg0s1ah82ptdVUb9nH2ttj3UbySOXUvytWw2yqy8c1cKzyRk6mDD00G47qS3fZI9/gMjg==}
@@ -664,9 +711,17 @@ packages:
     resolution: {integrity: sha512-LS8tSomZa3YHnntpWt3PP43iFEEl6YeIsvDakczHBKlay5LdkXFr8w7v8H6akpG5nRrzydyB0k1iE2eoL6aKIQ==}
     engines: {node: '>=16.0.0'}
 
+  '@whatwg-node/node-fetch@0.7.25':
+    resolution: {integrity: sha512-szCTESNJV+Xd56zU6ShOi/JWROxE9IwCic8o5D9z5QECZloas6Ez5tUuKqXTAdu6fHFx1t6C+5gwj8smzOLjtg==}
+    engines: {node: '>=18.0.0'}
+
   '@whatwg-node/promise-helpers@1.3.2':
     resolution: {integrity: sha512-Nst5JdK47VIl9UcGwtv2Rcgyn5lWtZ0/mhRQ4G8NN2isxpq2TO30iqHzmwoJycjWuyUfg3GFXqP/gFHXeV57IA==}
     engines: {node: '>=16.0.0'}
+
+  '@whatwg-node/server@0.10.12':
+    resolution: {integrity: sha512-MQIvvQyPvKGna586MzXhgwnEbGtbm7QtOgJ/KPd/tC70M/jbhd1xHdIQQbh3okBw+MrDF/EvaC2vB5oRC7QdlQ==}
+    engines: {node: '>=18.0.0'}
 
   '@whatwg-node/server@0.9.36':
     resolution: {integrity: sha512-KT9qKLmbuWSuFv0Vg4JyK2vN2+vSuQPeEa25xpndYFROAIZntYe7e2BlWAk9l7IrgnV+M4bCVhjrAwwRsaCeiA==}
@@ -1132,6 +1187,12 @@ packages:
     peerDependencies:
       graphql: 15.8.0
 
+  graphql-yoga@5.15.1:
+    resolution: {integrity: sha512-wCSnviFFGC4CF9lyeRNMW1p55xVWkMRLPu9iHYbBd8WCJEjduDTo3nh91sVktpbJdUQ6rxNBN6hhpTYMFZuMwg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      graphql: 15.8.0
+
   graphql@15.8.0:
     resolution: {integrity: sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==}
     engines: {node: '>= 10.x'}
@@ -1148,14 +1209,14 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  houdini-adapter-auto@1.3.8-next.8:
-    resolution: {integrity: sha512-JnsVMEU2FxpYKwMEwNhrCifL4wuivZWTMx4f2dSjFH9BpD6YilE1D1DWLzv3uP38WFbbRN3kJZiOh8Z3NqHYXw==}
+  houdini-adapter-auto@1.3.8-next.9:
+    resolution: {integrity: sha512-r5UX+RW8kwPVLYKY157tY6a5U93nN15GASrNf7nD7vc/Vaq1Gfub5H8epIN6Vahh/YWE7lAgZvcq5RtU8XkxIw==}
 
-  houdini-react@2.0.0-next.10:
-    resolution: {integrity: sha512-wxd4j8fueuO0zRowHsP890eZlSOgG7WeDxL7Yw4fijvxslK/s+xVvytvWOE6nH2TNjmQuOADpCiCI2vGlPRnuQ==}
+  houdini-react@2.0.0-next.11:
+    resolution: {integrity: sha512-atEX24h61ENTYP2hHacWkHL4drN+dWsgfarwC9L3L0f3G2XDQDDyA/ESyHnUC7+cYEuCRYxXZ/yY1NjGQJ4jNg==}
 
-  houdini@2.0.0-next.8:
-    resolution: {integrity: sha512-+9WL878e5VKoZylwak1U5QMajDejwcq77+HQ4m7rktT3gHWMpfIAfJou3Nj7kutZDBvsD/2Q3juYLlwic6+vjQ==}
+  houdini@2.0.0-next.9:
+    resolution: {integrity: sha512-B2aCBYAF6+y0IFGkwavJScH4VvwvkYCQVyknkQfwhSJifddQ1VGuYCi53//0f9UCldV4ERt8oUFPGlKuOhUmsw==}
     hasBin: true
     peerDependencies:
       vite: ^6.0.3
@@ -1738,6 +1799,9 @@ packages:
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
 
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
   tsscmp@1.0.6:
     resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
     engines: {node: '>=0.6.x'}
@@ -2050,9 +2114,26 @@ snapshots:
       '@envelop/types': 4.0.1
       tslib: 2.6.3
 
+  '@envelop/core@5.3.0':
+    dependencies:
+      '@envelop/instrumentation': 1.0.0
+      '@envelop/types': 5.2.1
+      '@whatwg-node/promise-helpers': 1.3.2
+      tslib: 2.8.1
+
+  '@envelop/instrumentation@1.0.0':
+    dependencies:
+      '@whatwg-node/promise-helpers': 1.3.2
+      tslib: 2.6.3
+
   '@envelop/types@4.0.1':
     dependencies:
       tslib: 2.6.3
+
+  '@envelop/types@5.2.1':
+    dependencies:
+      '@whatwg-node/promise-helpers': 1.3.2
+      tslib: 2.8.1
 
   '@esbuild/aix-ppc64@0.25.9':
     optional: true
@@ -2132,6 +2213,8 @@ snapshots:
   '@esbuild/win32-x64@0.25.9':
     optional: true
 
+  '@fastify/busboy@3.2.0': {}
+
   '@graphql-tools/executor@1.2.8(graphql@15.8.0)':
     dependencies:
       '@graphql-tools/utils': 10.3.1(graphql@15.8.0)
@@ -2140,6 +2223,16 @@ snapshots:
       graphql: 15.8.0
       tslib: 2.6.3
       value-or-promise: 1.0.12
+
+  '@graphql-tools/executor@1.4.9(graphql@15.8.0)':
+    dependencies:
+      '@graphql-tools/utils': 10.9.1(graphql@15.8.0)
+      '@graphql-typed-document-node/core': 3.2.0(graphql@15.8.0)
+      '@repeaterjs/repeater': 3.0.6
+      '@whatwg-node/disposablestack': 0.0.6
+      '@whatwg-node/promise-helpers': 1.3.2
+      graphql: 15.8.0
+      tslib: 2.8.1
 
   '@graphql-tools/merge@8.4.2(graphql@15.8.0)':
     dependencies:
@@ -2158,6 +2251,13 @@ snapshots:
       '@graphql-tools/utils': 10.9.1(graphql@15.8.0)
       graphql: 15.8.0
       tslib: 2.6.3
+
+  '@graphql-tools/schema@10.0.25(graphql@15.8.0)':
+    dependencies:
+      '@graphql-tools/merge': 9.1.1(graphql@15.8.0)
+      '@graphql-tools/utils': 10.9.1(graphql@15.8.0)
+      graphql: 15.8.0
+      tslib: 2.8.1
 
   '@graphql-tools/schema@10.0.4(graphql@15.8.0)':
     dependencies:
@@ -2206,6 +2306,10 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
+  '@graphql-yoga/logger@2.0.1':
+    dependencies:
+      tslib: 2.8.1
+
   '@graphql-yoga/subscription@4.0.0':
     dependencies:
       '@graphql-yoga/typed-event-target': 2.0.0
@@ -2213,10 +2317,22 @@ snapshots:
       '@whatwg-node/events': 0.1.1
       tslib: 2.6.3
 
+  '@graphql-yoga/subscription@5.0.5':
+    dependencies:
+      '@graphql-yoga/typed-event-target': 3.0.2
+      '@repeaterjs/repeater': 3.0.6
+      '@whatwg-node/events': 0.1.1
+      tslib: 2.8.1
+
   '@graphql-yoga/typed-event-target@2.0.0':
     dependencies:
       '@repeaterjs/repeater': 3.0.6
       tslib: 2.6.3
+
+  '@graphql-yoga/typed-event-target@3.0.2':
+    dependencies:
+      '@repeaterjs/repeater': 3.0.6
+      tslib: 2.8.1
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -2378,7 +2494,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@whatwg-node/disposablestack@0.0.6':
+    dependencies:
+      '@whatwg-node/promise-helpers': 1.3.2
+      tslib: 2.6.3
+
   '@whatwg-node/events@0.1.1': {}
+
+  '@whatwg-node/fetch@0.10.10':
+    dependencies:
+      '@whatwg-node/node-fetch': 0.7.25
+      urlpattern-polyfill: 10.0.0
 
   '@whatwg-node/fetch@0.9.18':
     dependencies:
@@ -2393,8 +2519,23 @@ snapshots:
       fast-querystring: 1.1.2
       tslib: 2.6.3
 
+  '@whatwg-node/node-fetch@0.7.25':
+    dependencies:
+      '@fastify/busboy': 3.2.0
+      '@whatwg-node/disposablestack': 0.0.6
+      '@whatwg-node/promise-helpers': 1.3.2
+      tslib: 2.6.3
+
   '@whatwg-node/promise-helpers@1.3.2':
     dependencies:
+      tslib: 2.6.3
+
+  '@whatwg-node/server@0.10.12':
+    dependencies:
+      '@envelop/instrumentation': 1.0.0
+      '@whatwg-node/disposablestack': 0.0.6
+      '@whatwg-node/fetch': 0.10.10
+      '@whatwg-node/promise-helpers': 1.3.2
       tslib: 2.6.3
 
   '@whatwg-node/server@0.9.36':
@@ -2905,6 +3046,23 @@ snapshots:
       lru-cache: 10.4.3
       tslib: 2.6.3
 
+  graphql-yoga@5.15.1(graphql@15.8.0):
+    dependencies:
+      '@envelop/core': 5.3.0
+      '@envelop/instrumentation': 1.0.0
+      '@graphql-tools/executor': 1.4.9(graphql@15.8.0)
+      '@graphql-tools/schema': 10.0.25(graphql@15.8.0)
+      '@graphql-tools/utils': 10.9.1(graphql@15.8.0)
+      '@graphql-yoga/logger': 2.0.1
+      '@graphql-yoga/subscription': 5.0.5
+      '@whatwg-node/fetch': 0.10.10
+      '@whatwg-node/promise-helpers': 1.3.2
+      '@whatwg-node/server': 0.10.12
+      dset: 3.1.4
+      graphql: 15.8.0
+      lru-cache: 10.4.3
+      tslib: 2.8.1
+
   graphql@15.8.0: {}
 
   has-flag@3.0.0: {}
@@ -2915,14 +3073,14 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  houdini-adapter-auto@1.3.8-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
+  houdini-adapter-auto@1.3.8-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
     dependencies:
-      houdini: 2.0.0-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
+      houdini: 2.0.0-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
       import-meta-resolve: 3.1.1
     transitivePeerDependencies:
       - vite
 
-  houdini-react@2.0.0-next.10(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
+  houdini-react@2.0.0-next.11(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
     dependencies:
       '@babel/parser': 7.28.3
       '@babel/types': 7.28.2
@@ -2934,7 +3092,7 @@ snapshots:
       express: 4.21.2
       graphql: 15.8.0
       graphql-yoga: 4.0.4(graphql@15.8.0)
-      houdini: 2.0.0-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
+      houdini: 2.0.0-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5))
       react: 19.0.0-canary-2b036d3f1-20240327
       react-dom: 19.0.0-canary-2b036d3f1-20240327(react@19.0.0-canary-2b036d3f1-20240327)
       react-streaming-compat: 0.3.18(react-dom@19.0.0-canary-2b036d3f1-20240327(react@19.0.0-canary-2b036d3f1-20240327))(react@19.0.0-canary-2b036d3f1-20240327)
@@ -2945,7 +3103,7 @@ snapshots:
       - supports-color
       - vite
 
-  houdini@2.0.0-next.8(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
+  houdini@2.0.0-next.9(vite@6.3.5(@types/node@24.3.0)(jiti@1.21.6)(yaml@2.4.5)):
     dependencies:
       '@babel/parser': 7.28.3
       '@clack/prompts': 0.6.3
@@ -2956,7 +3114,7 @@ snapshots:
       '@types/fs-extra': 9.0.13
       '@types/micromatch': 4.0.9
       '@ungap/structured-clone': 1.2.0
-      '@whatwg-node/server': 0.9.36
+      '@whatwg-node/server': 0.10.12
       ast-types: 0.16.1
       commander: 9.5.0
       deepmerge: 4.3.1
@@ -3524,6 +3682,8 @@ snapshots:
   ts-interface-checker@0.1.13: {}
 
   tslib@2.6.3: {}
+
+  tslib@2.8.1: {}
 
   tsscmp@1.0.6: {}
 

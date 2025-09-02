@@ -26,8 +26,13 @@ export function Card(props: CardProps) {
 
   const [, moveCard] = useMutation(
     graphql(`
-      mutation moveCardAfterCard($input: MoveCardInput!) {
+      mutation moveCardAfterCard($input: MoveCardInput!){
         moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
           source {
             id
             cards {
@@ -99,7 +104,7 @@ export function Card(props: CardProps) {
         }}
       >
         <div className="mb-2 gap-2 flex flex-row">
-          <h3 >{card.text}</h3>
+          <h3>{card.text}</h3>
         </div>
         <button
           aria-label="Delete card"
