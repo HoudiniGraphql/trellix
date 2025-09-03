@@ -64,7 +64,7 @@ export function NewCard(props: {
                 },
               },
             },
-          },
+          }
         });
         invariant(textAreaRef.current);
         textAreaRef.current.value = "";

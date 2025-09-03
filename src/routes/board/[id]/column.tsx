@@ -1,9 +1,5 @@
-import {
-  graphql,
-  useFragment,
-  useMutation,
-  type Column_column,
-} from "$houdini";
+import { graphql, useFragment, useMutation } from "$houdini";
+import type { Column_column } from "$houdini";
 import { useState, useRef } from "react";
 import { flushSync } from "react-dom";
 import invariant from "tiny-invariant";
@@ -59,6 +55,34 @@ export function Column(props: ColumnProps) {
 
   const items = column.cards;
 
+  const [, moveCard] = useMutation(
+    graphql(`
+      mutation moveCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
+        moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
+          source {
+            id
+            cards {
+              id
+              order
+            }
+          }
+          destination {
+            id
+            cards {
+              id
+              order
+            }
+          }
+        }
+      }
+    `),
+  );
+
   return (
     <div
       className={
@@ -81,10 +105,20 @@ export function Column(props: ColumnProps) {
         let transfer = JSON.parse(event.dataTransfer.getData("card"));
         invariant(transfer.id, "missing transfer.id");
 
+        moveCard({
+          variables: {
+            input: {
+              card: transfer.id,
+              column: column.id,
+              index: 1,
+            },
+          },
+        });
+
         setAcceptDrop(false);
       }}
     >
-      <div className="p-2">
+      <div className="p-2 flex flex-row pr-3 items-center">
         <EditableText
           value={column.name}
           onChange={(val) => {

@@ -28,7 +28,7 @@ export function NewColumn(props: {
       mutation createColumn($input: CreateColumnInput!, $parentID: ID!) {
         createColumn(input: $input) {
           column {
-            id @optimisticKey
+            id
             ...Board_Columns_insert @parentID(value: $parentID) @append
           }
         }

@@ -1,11 +1,8 @@
-import {
-  graphql,
-  useFragment,
-  useMutation,
-  type BoardInfoCard_card,
-} from "$houdini";
 import { useState } from "react";
+import { graphql, useFragment, useMutation } from "$houdini";
+import type { BoardInfoCard_card } from "$houdini";
 import { Icon } from "~/components/icons";
+import { formatDistance } from 'date-fns'
 
 interface CardProps {
   card: BoardInfoCard_card;
@@ -19,6 +16,7 @@ export function Card(props: CardProps) {
         id
         order
         text
+        dateCreated
         column {
           id
         }
@@ -28,20 +26,15 @@ export function Card(props: CardProps) {
 
   let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
 
-  const [, deleteCard] = useMutation(
-    graphql(`
-      mutation deleteCard($cardID: ID!) {
-        deleteCard(id: $cardID) {
-          cardID @Card_delete
-        }
-      }
-    `),
-  );
-
   const [, moveCard] = useMutation(
     graphql(`
-      mutation moveCard($input: MoveCardInput!) {
+      mutation moveCardAfterCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
         moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
           source {
             id
             cards {
@@ -60,6 +53,16 @@ export function Card(props: CardProps) {
       }
     `),
   );
+
+  const [, deleteCard] = useMutation(
+    graphql(`
+      mutation deleteCard($cardID: ID!) {
+        deleteCard(id: $cardID) {
+          cardID @Card_delete
+        }
+      }
+    `),
+  )
 
   return (
     <li
@@ -112,21 +115,31 @@ export function Card(props: CardProps) {
           event.dataTransfer.setData("fromColumn", JSON.stringify(card));
         }}
       >
-        <h3 className="mb-2">{card.text}</h3>
+        <div className="mb-2 gap-2 flex flex-row">
+          <h3>{card.text}</h3>
+          <span>
+            ({formatDistance(card.dateCreated, new Date(), { addSuffix: true })})
+          </span>
+        </div>
         <button
           aria-label="Delete card"
           className="absolute top-[0.25rem] right-4 hover:text-brand-red"
           type="submit"
-          onClick={(event) => {
+          onClick={async (event) => {
             event.preventDefault();
-            deleteCard({
-              variables: { cardID: card.id },
-              optimisticResponse: {
-                deleteCard: {
-                  cardID: card.id,
+
+            try {
+              await deleteCard({
+                variables: { cardID: card.id },
+                optimisticResponse: {
+                  deleteCard: {
+                    cardID: card.id,
+                  },
                 },
-              },
-            });
+              })  
+            } catch (e) {
+              alert(e)
+            } 
           }}
         >
           <Icon name="trash" />
