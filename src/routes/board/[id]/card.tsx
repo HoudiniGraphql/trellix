@@ -22,35 +22,9 @@ export function Card(props: CardProps) {
     `),
   );
 
-  let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
+  const moveCard = useMoveCard();
 
-  const [, moveCard] = useMutation(
-    graphql(`
-      mutation moveCardAfterCard($input: MoveCardInput!){
-        moveCard(input: $input) {
-          card {
-            column {
-              id
-            }
-          }
-          source {
-            id
-            cards {
-              id
-              order
-            }
-          }
-          destination {
-            id
-            cards {
-              id
-              order
-            }
-          }
-        }
-      }
-    `),
-  );
+  let [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
 
   return (
     <li
@@ -121,3 +95,36 @@ export function Card(props: CardProps) {
     </li>
   );
 }
+
+export function useMoveCard() {
+  const [, moveCard] = useMutation(
+    graphql(`
+      mutation moveCardAfterCard($input: MoveCardInput!){
+        moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
+          source {
+            id
+            cards {
+              id
+              order
+            }
+          }
+          destination {
+            id
+            cards {
+              id
+              order
+            }
+          }
+        }
+      }
+    `),
+  );
+
+  return moveCard
+}
+

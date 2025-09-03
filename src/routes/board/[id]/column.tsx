@@ -5,7 +5,7 @@ import { flushSync } from "react-dom";
 import invariant from "tiny-invariant";
 import { Icon } from "~/components/icons";
 
-import { Card } from "./card";
+import { Card, useMoveCard } from "./card";
 import { EditableText } from "./components";
 import { NewCard } from "./new-card";
 
@@ -55,33 +55,7 @@ export function Column(props: ColumnProps) {
 
   const items = column.cards;
 
-  const [, moveCard] = useMutation(
-    graphql(`
-      mutation moveCard($input: MoveCardInput!) {
-        moveCard(input: $input) {
-          card {
-            column {
-              id
-            }
-          }
-          source {
-            id
-            cards {
-              id
-              order
-            }
-          }
-          destination {
-            id
-            cards {
-              id
-              order
-            }
-          }
-        }
-      }
-    `),
-  );
+  const moveCard = useMoveCard()
 
   return (
     <div
