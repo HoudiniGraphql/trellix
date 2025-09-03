@@ -1,8 +1,11 @@
 import { createSchema } from "graphql-yoga";
 import type { DatabaseSync, SQLOutputValue } from "node:sqlite";
+import { DateTimeResolver, DateTimeTypeDefinition } from 'graphql-scalars'
 
 export default createSchema({
   typeDefs: `
+    ${DateTimeTypeDefinition}
+
     type Query {
       boards: [Board!]!
       board(id: ID!): Board
@@ -16,6 +19,11 @@ export default createSchema({
       updateColumn(input: UpdateColumnInput!): UpdateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
       moveCard(input: MoveCardInput!): MoveCardOutput!
+      deleteCard(id: ID!): DeleteCardOutput!
+    }
+
+    type DeleteCardOutput {
+      cardID: ID
     }
 
     type Board {
@@ -36,6 +44,7 @@ export default createSchema({
       text: String!
       order: Int!
       column: Column!
+      dateCreated: DateTime!
     }
 
     type DeleteBoardOutput {
@@ -82,6 +91,7 @@ export default createSchema({
       card: ID!
       column: ID!
       index: Int!
+      delay: Int
     }
 
     type MoveCardOutput {
@@ -158,6 +168,9 @@ export default createSchema({
         if (!row) throw new Error("Column not found for card");
         return mapColumn(row);
       },
+      dateCreated: (card: Card): string => {
+        return new Date(card.dateCreated).toISOString()
+      },
     },
 
     // ---------- Mutations ----------
@@ -211,6 +224,26 @@ export default createSchema({
           .prepare("SELECT id, name, color FROM boards WHERE id = ?")
           .get(bid)!;
         return { board: mapBoard(row) };
+      },
+
+      deleteCard: (_: unknown, { id }: { id: string }, ctx: Ctx) => {
+        const cardID = toInt(id);
+        const existing = ctx.db
+          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+          .get(cardID);
+
+        if (!existing) {
+          throw new Error("Unknown card with id: " + id)
+        };
+
+        tx(ctx, (db) => {
+            db.prepare("DELETE FROM cards WHERE id = ?").run(cardID);
+            db.prepare(
+              'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
+            ).run(existing.column_id, existing.order);
+        });
+
+        return { cardID: toID(cardID) };
       },
 
       createColumn: (
@@ -285,7 +318,7 @@ export default createSchema({
         return { card: mapCard(row) };
       },
 
-      moveCard: (
+      moveCard: async (
         _: unknown,
         { input }: { input: { card: string; column: string; index: number, delay?: number } },
         ctx: Ctx,
@@ -294,7 +327,11 @@ export default createSchema({
         const destColId = toInt(input.column);
         const desiredIndex = input.index;
 
-  
+        if (input.delay) {
+          await new Promise((resolve) => {
+            setTimeout(resolve, input.delay)
+          })
+        }
 
         // do everything inside a cancellable savepoint
         return tx(ctx, (db) => {
@@ -436,6 +473,7 @@ export default createSchema({
         });
       },
     },
+    DateTime: DateTimeResolver
   },
 });
 

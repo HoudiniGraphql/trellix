@@ -2,6 +2,7 @@ import { useState } from "react";
 import { graphql, useFragment, useMutation } from "$houdini";
 import type { BoardInfoCard_card } from "$houdini";
 import { Icon } from "~/components/icons";
+import { formatDistance } from 'date-fns'
 
 interface CardProps {
   card: BoardInfoCard_card;
@@ -15,6 +16,7 @@ export function Card(props: CardProps) {
         id
         order
         text
+        dateCreated
         column {
           id
         }
@@ -26,7 +28,7 @@ export function Card(props: CardProps) {
 
   const [, moveCard] = useMutation(
     graphql(`
-      mutation moveCardAfterCard($input: MoveCardInput!){
+      mutation moveCardAfterCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
         moveCard(input: $input) {
           card {
             column {
@@ -51,6 +53,16 @@ export function Card(props: CardProps) {
       }
     `),
   );
+
+  const [, deleteCard] = useMutation(
+    graphql(`
+      mutation deleteCard($cardID: ID!) {
+        deleteCard(id: $cardID) {
+          cardID @Card_delete
+        }
+      }
+    `),
+  )
 
   return (
     <li
@@ -105,6 +117,9 @@ export function Card(props: CardProps) {
       >
         <div className="mb-2 gap-2 flex flex-row">
           <h3>{card.text}</h3>
+          <span>
+            ({formatDistance(card.dateCreated, new Date(), { addSuffix: true })})
+          </span>
         </div>
         <button
           aria-label="Delete card"
@@ -113,6 +128,18 @@ export function Card(props: CardProps) {
           onClick={async (event) => {
             event.preventDefault();
 
+            try {
+              await deleteCard({
+                variables: { cardID: card.id },
+                optimisticResponse: {
+                  deleteCard: {
+                    cardID: card.id,
+                  },
+                },
+              })  
+            } catch (e) {
+              alert(e)
+            } 
           }}
         >
           <Icon name="trash" />

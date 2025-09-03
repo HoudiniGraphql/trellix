@@ -57,7 +57,7 @@ export function Column(props: ColumnProps) {
 
   const [, moveCard] = useMutation(
     graphql(`
-      mutation moveCard($input: MoveCardInput!) {
+      mutation moveCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
         moveCard(input: $input) {
           card {
             column {
