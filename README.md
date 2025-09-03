@@ -1,6 +1,6 @@
 # houdini/trellix
 
-This is a Houdini clone of the [Remix Trellix Example(https://github.com/remix-run/example-trellix) 
+This is a Houdini clone of the [Remix Trellix Example](https://github.com/remix-run/example-trellix) 
 meant to show case some real-world usecases that are difficult to show in a traditional To Do Application:
 
 - Streamlined server <-> client development flow
