@@ -168,6 +168,6 @@ import { formatDistance } from 'date-fns'
 
               delay: 5000,
 
- @dedupe(cancelFirst: True, match: "Operation")
+ @dedupe(cancelFirst: true, match: Operation)
 
   
