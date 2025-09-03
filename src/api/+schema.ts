@@ -16,6 +16,11 @@ export default createSchema({
       updateColumn(input: UpdateColumnInput!): UpdateColumnOutput!
       createCard(input: CreateCardInput!): CreateCardOutput!
       moveCard(input: MoveCardInput!): MoveCardOutput!
+      deleteCard(id: ID!): DeleteCardOutput!
+    }
+
+    type DeleteCardOutput {
+      cardID: ID
     }
 
     type Board {
@@ -162,6 +167,25 @@ export default createSchema({
 
     // ---------- Mutations ----------
     Mutation: {
+      deleteCard: (_: unknown, { id }: { id: string }, ctx: Ctx) => {
+        const cardID = toInt(id);
+        const existing = ctx.db
+          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+          .get(cardID);
+
+        if (!existing) {
+          throw new Error("Unknown card with id: " + id)
+        };
+
+        tx(ctx, (db) => {
+            db.prepare("DELETE FROM cards WHERE id = ?").run(cardID);
+            db.prepare(
+              'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
+            ).run(existing.column_id, existing.order);
+        });
+
+        return { cardID: toID(cardID) };
+      },
       createBoard: (
         _: unknown,
         { input }: { input: { name: string; color: string } },
@@ -285,7 +309,7 @@ export default createSchema({
         return { card: mapCard(row) };
       },
 
-      moveCard: async (
+      moveCard: (
         _: unknown,
         { input }: { input: { card: string; column: string; index: number, delay?: number } },
         ctx: Ctx,

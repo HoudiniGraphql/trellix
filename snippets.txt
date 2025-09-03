@@ -3,23 +3,21 @@
 
 import { DateTimeResolver, DateTimeTypeDefinition } from 'graphql-scalars'
 
-${DateTimeTypeDefinition}
+    ${DateTimeTypeDefinition}
 
-dateCreated: DateTime!
+      dateCreated: DateTime!
 
-dateCreated: (card: Card): string => {
-  return new Date(card.dateCreated).toISOString()
-},
+      dateCreated: (card: Card): string => {
+        return new Date(card.dateCreated).toISOString()
+      },
  
-DateTime: DateTimeResolver
-
-++
+    DateTime: DateTimeResolver
 
 import { formatDistance } from 'date-fns'
 
-<span>
-  ({formatDistance(card.dateCreated, new Date(), { addSuffix: true })})
-</span>
+          <span>
+            ({formatDistance(card.dateCreated, new Date(), { addSuffix: true })})
+          </span>
 
 
 
@@ -47,7 +45,7 @@ import { formatDistance } from 'date-fns'
 
  ---
 
-      deleteCard(id: ID!): DeleteCardOutput!   
+      deleteCard(id: ID!): DeleteCardOutput!
 
     type DeleteCardOutput {
       cardID: ID
@@ -56,12 +54,15 @@ import { formatDistance } from 'date-fns'
 
       deleteCard: (_: unknown, { id }: { id: string }, ctx: Ctx) => {
         const cardID = toInt(id);
-        tx(ctx, (db) => {
-          const existing = db
-            .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
-            .get(cardID);
+        const existing = ctx.db
+          .prepare('SELECT id, text, "order", column_id FROM cards WHERE id = ?')
+          .get(cardID);
 
-          if (!existing) return { cardID: null };
+        if (!existing) {
+          throw new Error("Unknown card with id: " + id)
+        };
+
+        tx(ctx, (db) => {
             db.prepare("DELETE FROM cards WHERE id = ?").run(cardID);
             db.prepare(
               'UPDATE cards SET "order" = "order" - 1 WHERE column_id = ? AND "order" > ?'
@@ -82,14 +83,19 @@ import { formatDistance } from 'date-fns'
   )
 
 
-            deleteCard({
-              variables: { cardID: card.id },
-              optimisticResponse: {
-                deleteCard: {
-                  cardID: card.id,
+            try {
+              await deleteCard({
+                variables: { cardID: card.id },
+                optimisticResponse: {
+                  deleteCard: {
+                    cardID: card.id,
+                  },
                 },
-              },
-            })
+              })  
+            } catch (e) {
+              alert(e)
+            } 
+
 
 
 

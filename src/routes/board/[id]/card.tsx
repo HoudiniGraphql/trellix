@@ -110,8 +110,9 @@ export function Card(props: CardProps) {
           aria-label="Delete card"
           className="absolute top-[0.25rem] right-4 hover:text-brand-red"
           type="submit"
-          onClick={(event) => {
+          onClick={async (event) => {
             event.preventDefault();
+
           }}
         >
           <Icon name="trash" />
