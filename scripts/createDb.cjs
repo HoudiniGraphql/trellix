@@ -1,4 +1,11 @@
+
 const { DatabaseSync } = require('node:sqlite');
+const fs  = require('node:fs');
+
+try {
+fs.rmSync('./database.sqlite')
+} catch {}
+
 const database = new DatabaseSync('./database.sqlite');
 
 database.exec(`
