@@ -55,33 +55,7 @@ export function Column(props: ColumnProps) {
 
   const items = column.cards;
 
-  const [, moveCard] = useMutation(
-    graphql(`
-      mutation moveCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
-        moveCard(input: $input) {
-          card {
-            column {
-              id
-            }
-          }
-          source {
-            id
-            cards {
-              id
-              order
-            }
-          }
-          destination {
-            id
-            cards {
-              id
-              order
-            }
-          }
-        }
-      }
-    `),
-  );
+  const moveCard = useMoveCard();
 
   return (
     <div
@@ -111,6 +85,7 @@ export function Column(props: ColumnProps) {
               card: transfer.id,
               column: column.id,
               index: 1,
+              delay: 5000,
             },
           },
         });
@@ -176,4 +151,37 @@ export function Column(props: ColumnProps) {
       )}
     </div>
   );
+}
+
+export function useMoveCard() {
+
+  const [, moveCard] = useMutation(
+    graphql(`
+      mutation moveCard($input: MoveCardInput!) @dedupe(cancelFirst: true, match: Operation) {
+        moveCard(input: $input) {
+          card {
+            column {
+              id
+            }
+          }
+          source {
+            id
+            cards {
+              id
+              order
+            }
+          }
+          destination {
+            id
+            cards {
+              id
+              order
+            }
+          }
+        }
+      }
+    `),
+  );
+
+  return moveCard;
 }

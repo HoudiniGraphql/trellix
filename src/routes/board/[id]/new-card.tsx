@@ -31,6 +31,7 @@ export function NewCard(props: {
             id @optimisticKey
             text
             order
+            dateCreated
             column {
               id
             }
@@ -59,6 +60,7 @@ export function NewCard(props: {
               card: {
                 text,
                 order: props.nextOrder,
+                dateCreated: new Date(),
                 column: {
                   id: column.id,
                 },

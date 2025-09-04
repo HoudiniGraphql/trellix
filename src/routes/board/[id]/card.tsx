@@ -91,6 +91,7 @@ export function Card(props: CardProps) {
               card: transfer.id,
               column: card.column.id,
               index: droppedOrder,
+              delay: 5000,
             },
           },
         });

@@ -333,6 +333,8 @@ export default createSchema({
           })
         }
 
+        console.log(ctx.request.signal.aborted)
+
         // do everything inside a cancellable savepoint
         return tx(ctx, (db) => {
           // Load source card + its column/board
